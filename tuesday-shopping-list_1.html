@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Tuesday — The Shopping List</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F3F0E7;
+    --card:#FBFAF5;
+    --edge:#DFDACB;
+    --ink:#23302A;
+    --ink-soft:#5C6A62;
+    --sage:#7D9A83;
+    --sage-deep:#4E6B58;
+    --mint:#D3E3D4;
+    --berry:#8A4F5E;
+    --amber:#C09A5E;
+    --display:"Newsreader", Georgia, "Times New Roman", serif;
+    --ui:"Figtree", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+
+  body{
+    background:var(--paper);color:var(--ink);
+    font-family:var(--ui);font-size:18px;line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    padding:20px 16px 56px;
+  }
+  .wrap{max-width:820px;margin:0 auto}
+
+  .masthead{
+    display:flex;align-items:baseline;gap:12px;
+    padding-bottom:14px;margin-bottom:26px;border-bottom:1px solid var(--edge);
+  }
+  .day{font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--sage-deep)}
+  .masthead h1{font-family:var(--display);font-weight:400;font-size:26px;margin:0;letter-spacing:-.01em}
+  .masthead .of{margin-left:auto;font-size:13px;color:var(--ink-soft)}
+
+  .screen{display:none;animation:rise .45s ease both}
+  .screen.on{display:block}
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  .lede{font-family:var(--display);font-size:24px;line-height:1.35;margin:0 0 12px;max-width:34ch}
+  .sub{color:var(--ink-soft);margin:0 0 26px;max-width:52ch}
+
+  button{font-family:var(--ui);font-size:18px;cursor:pointer}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;
+    min-height:58px;padding:0 30px;border-radius:100px;
+    background:var(--sage-deep);color:#fff;border:1px solid var(--sage-deep);
+    font-weight:600;transition:background .2s ease,transform .12s ease;
+  }
+  .btn:hover{background:#3F5A48}
+  .btn:active{transform:translateY(1px)}
+  .btn.ghost{background:transparent;color:var(--sage-deep);border-color:var(--sage)}
+  .btn.ghost:hover{background:var(--mint)}
+  .btn:disabled{opacity:.4;cursor:default}
+  :focus-visible{outline:3px solid var(--berry);outline-offset:3px}
+  .row{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+
+  /* ---------- the list, on a notepad ---------- */
+  .timerbar{height:5px;background:var(--edge);border-radius:100px;overflow:hidden;margin-bottom:22px}
+  .timerbar i{display:block;height:100%;background:var(--sage);width:100%;transition:width 1s linear}
+
+  .pad{
+    position:relative;background:var(--card);
+    border:1px solid var(--edge);border-radius:2px;
+    max-width:400px;margin:0 0 26px;padding:26px 26px 30px 58px;
+    box-shadow:0 2px 0 rgba(35,48,42,.05), 0 12px 24px -18px rgba(35,48,42,.4);
+  }
+  .pad:before{ /* margin rule */
+    content:"";position:absolute;left:40px;top:0;bottom:0;width:1px;background:var(--berry);opacity:.35;
+  }
+  .pad h2{
+    font-family:var(--ui);font-size:11px;font-weight:600;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--ink-soft);margin:0 0 16px;
+  }
+  .pad ol{list-style:none;margin:0;padding:0}
+  .pad li{
+    font-family:var(--display);font-style:italic;font-weight:500;font-size:26px;line-height:1.9;
+    border-bottom:1px solid var(--edge);
+    animation:rise .5s ease both;
+  }
+  .pad li:last-child{border-bottom:0}
+
+  /* ---------- the shop ---------- */
+  .shopbar{
+    display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+    font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);
+    margin-bottom:16px;
+  }
+  .shelf{display:grid;gap:10px;grid-template-columns:repeat(2,1fr);margin-bottom:26px}
+  @media(min-width:560px){.shelf{grid-template-columns:repeat(3,1fr);gap:12px}}
+  @media(min-width:760px){.shelf{grid-template-columns:repeat(4,1fr)}}
+
+  .tile{
+    min-height:70px;padding:12px 14px;border-radius:6px;text-align:left;
+    background:var(--card);border:1.5px solid var(--edge);color:var(--ink);
+    font-family:var(--display);font-size:20px;font-weight:500;line-height:1.25;
+    transition:border-color .16s ease,background .16s ease;
+    position:relative;
+  }
+  .tile:hover:not(:disabled){border-color:var(--sage)}
+  .tile.picked{border-color:var(--sage-deep);background:var(--mint)}
+  .tile.picked:after{
+    content:"\2713";position:absolute;top:6px;right:9px;
+    font-family:var(--ui);font-size:15px;font-weight:600;color:var(--sage-deep);
+  }
+  .tile:disabled{cursor:default;opacity:.55}
+  .tile.hit{border-color:var(--sage-deep);background:var(--mint);opacity:1}
+  .tile.missed{border-color:var(--amber);background:#F6EFE1;opacity:1}
+  .tile.false{border-color:var(--berry);background:#F4E9EB;color:var(--berry);opacity:1}
+  .tile .tag{
+    display:block;font-family:var(--ui);font-size:11px;font-weight:600;
+    letter-spacing:.12em;text-transform:uppercase;margin-top:6px;opacity:.75;
+  }
+
+  /* ---------- pause ---------- */
+  .seedbox{
+    background:var(--card);border:1px solid var(--edge);border-radius:3px;
+    padding:22px;margin-bottom:22px;min-height:190px;
+    display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:center;
+  }
+  .seedbox svg{width:38px;height:38px}
+  .counts{display:flex;gap:10px;flex-wrap:wrap}
+  .counts button{
+    min-width:62px;min-height:58px;border-radius:6px;border:1.5px solid var(--edge);
+    background:var(--card);font-family:var(--display);font-size:22px;color:var(--ink);
+  }
+  .counts button:hover{border-color:var(--sage);background:var(--mint)}
+
+  /* ---------- result ---------- */
+  .scorewrap{text-align:center;padding:14px 0 6px}
+  .bignum{font-family:var(--display);font-size:88px;line-height:1;letter-spacing:-.03em;display:block}
+  .outof{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft)}
+  .band{font-family:var(--display);font-style:italic;font-size:26px;margin:18px 0 6px}
+  .breakdown{
+    display:flex;justify-content:center;gap:34px;flex-wrap:wrap;
+    margin:26px 0 30px;padding:20px 0;border-top:1px solid var(--edge);border-bottom:1px solid var(--edge);
+  }
+  .breakdown div{text-align:center}
+  .breakdown b{font-family:var(--display);font-size:30px;font-weight:400;display:block}
+  .breakdown span{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+
+  footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--edge);font-size:13px;line-height:1.6;color:var(--ink-soft)}
+
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <span class="day">Tuesday</span>
+    <h1>The Shopping List</h1>
+    <span class="of">Daily practice</span>
+  </div>
+
+  <!-- INTRO -->
+  <section class="screen on" id="s-intro">
+    <p class="lede">You read the list at the kitchen table. You do the shop twenty minutes later. That gap is the whole game.</p>
+    <p class="sub">Learn the list, take a short break, then walk the shelves and pick out what was on it. Some of what&rsquo;s on the shelf will be close to the real thing without being it &mdash; that&rsquo;s deliberate. It&rsquo;s how lists usually slip.</p>
+    <div class="row" style="margin-bottom:22px">
+      <button class="btn" id="go6">Start with six things</button>
+      <button class="btn ghost" id="go8">Make it eight</button>
+    </div>
+    <p style="font-size:15px;color:var(--ink-soft);margin:0">Six takes about three minutes.</p>
+  </section>
+
+  <!-- STUDY -->
+  <section class="screen" id="s-study">
+    <div class="timerbar"><i id="tbar"></i></div>
+    <p class="sub" style="margin-bottom:22px">Read it through twice. It helps to picture where each thing sits in the shop.</p>
+    <div class="pad">
+      <h2>Shopping</h2>
+      <ol id="list"></ol>
+    </div>
+    <div class="row"><button class="btn ghost" id="ready">I&rsquo;ve got it</button></div>
+  </section>
+
+  <!-- PAUSE -->
+  <section class="screen" id="s-pause">
+    <p class="lede">The drive to the shop.</p>
+    <p class="sub">Count the seeds. This bit isn&rsquo;t scored &mdash; it&rsquo;s here to fill the gap, so what you pick next is what actually stuck.</p>
+    <div class="seedbox" id="seedbox"></div>
+    <p style="margin:0 0 12px">How many did you count?</p>
+    <div class="counts" id="counts"></div>
+  </section>
+
+  <!-- SHOP -->
+  <section class="screen" id="s-shop">
+    <div class="shopbar">
+      <span>Pick what was on the list</span>
+      <span id="basket">0 in the basket</span>
+    </div>
+    <div class="shelf" id="shelf"></div>
+    <div class="row"><button class="btn" id="done" disabled>That&rsquo;s my shop done</button></div>
+  </section>
+
+  <!-- RESULT -->
+  <section class="screen" id="s-result">
+    <div class="scorewrap">
+      <span class="bignum" id="score">0</span>
+      <span class="outof">out of 100</span>
+      <p class="band" id="band"></p>
+      <p class="sub" style="margin:0 auto;text-align:center" id="bandsub"></p>
+    </div>
+    <div class="breakdown">
+      <div><b id="bHits">0</b><span>Remembered</span></div>
+      <div><b id="bMiss">0</b><span>Left behind</span></div>
+      <div><b id="bFalse">0</b><span>Picked in error</span></div>
+    </div>
+    <p class="sub" style="margin-bottom:18px">Here&rsquo;s how the shelf actually looked:</p>
+    <div class="shelf" id="review"></div>
+    <div class="row" style="justify-content:center">
+      <button class="btn" id="again">Play a new list</button>
+      <button class="btn ghost" id="switch">Change the length</button>
+    </div>
+  </section>
+
+  <footer>
+    Nothing is saved. Your score disappears the moment you close this page &mdash; come back tomorrow for a different game.
+    This is a memory exercise for practice and enjoyment, not a test or an assessment of your health.
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* Items grouped by aisle. Siblings inside a group make the sharpest lures —
+     forgetting "cream" and picking "milk" is exactly how a list goes wrong. */
+  var GROUPS = [
+    ["Milk","Cream","Butter","Cheese","Yoghurt"],
+    ["White loaf","Brown bread","Bread rolls","Crumpets"],
+    ["Eggs","Bacon","Sausages","Porridge oats"],
+    ["Apples","Bananas","Oranges","Pears","Grapes"],
+    ["Potatoes","Carrots","Onions","Tomatoes","Mushrooms"],
+    ["Teabags","Coffee","Hot chocolate","Sugar"],
+    ["Flour","Baking powder","Icing sugar","Vanilla"],
+    ["Baked beans","Tinned soup","Tuna","Sweetcorn"],
+    ["Biscuits","Chocolate","Jam","Honey"],
+    ["Chicken","Mince","Salmon","Ham"],
+    ["Washing powder","Washing-up liquid","Bleach","Sponges"],
+    ["Toothpaste","Soap","Shampoo","Toilet roll"],
+    ["Light bulbs","Batteries","Tinfoil","Bin bags"],
+    ["Newspaper","Birthday card","Stamps","Envelopes"],
+    ["Dog food","Cat food","Bird seed"],
+    ["Frozen peas","Fish fingers","Ice cream","Oven chips"]
+  ];
+
+  function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+  function shuffle(a){
+    var r=a.slice(), i, j, t;
+    for(i=r.length-1;i>0;i--){ j=Math.floor(Math.random()*(i+1)); t=r[i]; r[i]=r[j]; r[j]=t; }
+    return r;
+  }
+  function el(id){ return document.getElementById(id); }
+
+  /* ---------- build a list and a shelf ---------- */
+  function buildRound(n){
+    var groups = shuffle(GROUPS);
+    var targets = [], siblingPool = [], i;
+
+    for(i=0;i<n;i++){
+      var g = shuffle(groups[i]);
+      targets.push(g[0]);
+      siblingPool.push(g[1]);          /* the near-miss from the same aisle */
+    }
+
+    /* half the targets get a near-miss twin; the rest of the shelf is
+       filled from aisles that were never on the list at all */
+    var lures = shuffle(siblingPool).slice(0, Math.floor(n/2));
+    for(i=n;i<groups.length && lures.length < n + Math.floor(n/2); i++){
+      lures.push(pick(groups[i]));
+    }
+
+    return { targets: targets, shelf: shuffle(targets.concat(lures)) };
+  }
+
+  /* ---------- state ---------- */
+  var listSize = 6, targets = [], shelf = [], picked = {}, timer = null;
+
+  function show(id){
+    var all = document.querySelectorAll(".screen"), i;
+    for(i=0;i<all.length;i++){ all[i].classList.remove("on"); }
+    el(id).classList.add("on");
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
+
+  /* ---------- study ---------- */
+  function startStudy(){
+    var r = buildRound(listSize);
+    targets = r.targets;
+    shelf = r.shelf;
+    picked = {};
+
+    var html = "", i;
+    for(i=0;i<targets.length;i++){
+      html += '<li style="animation-delay:'+(i*80)+'ms">'+targets[i]+'</li>';
+    }
+    el("list").innerHTML = html;
+    show("s-study");
+
+    var SECONDS = listSize * 10;
+    var left = SECONDS;
+    el("tbar").style.width = "100%";
+    clearInterval(timer);
+    timer = setInterval(function(){
+      left--;
+      el("tbar").style.width = Math.max(0,(left/SECONDS)*100) + "%";
+      if(left <= 0){ clearInterval(timer); startPause(); }
+    }, 1000);
+  }
+
+  /* ---------- pause ---------- */
+  var seedRounds = 0;
+
+  function seedSVG(){
+    return '<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
+         + '<path d="M20 4 C30 12 32 26 20 36 C8 26 10 12 20 4 Z" fill="#7D9A83"/>'
+         + '<path d="M20 8 L20 33" stroke="#4E6B58" stroke-width="1.6" fill="none"/></svg>';
+  }
+
+  function startPause(){
+    clearInterval(timer);
+    seedRounds = 0;
+    show("s-pause");
+    nextSeeds();
+  }
+
+  function nextSeeds(){
+    var n = 4 + Math.floor(Math.random()*9), html = "", i;
+    for(i=0;i<n;i++){
+      html += '<span style="display:inline-block;transform:rotate('+Math.floor(Math.random()*360)+'deg)">'+seedSVG()+'</span>';
+    }
+    el("seedbox").innerHTML = html;
+
+    var opts = [], base = Math.max(3, n-2);
+    for(i=0;i<5;i++){ opts.push(base+i); }
+    opts = shuffle(opts);
+
+    var cbox = el("counts");
+    cbox.innerHTML = "";
+    opts.forEach(function(v){
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = v;
+      b.addEventListener("click", function(){
+        seedRounds++;
+        if(seedRounds >= 3){ startShop(); } else { nextSeeds(); }
+      });
+      cbox.appendChild(b);
+    });
+  }
+
+  /* ---------- the shop ---------- */
+  function startShop(){
+    var box = el("shelf");
+    box.innerHTML = "";
+    shelf.forEach(function(item){
+      var b = document.createElement("button");
+      b.className = "tile";
+      b.type = "button";
+      b.textContent = item;
+      b.setAttribute("aria-pressed","false");
+      b.addEventListener("click", function(){ toggle(item, b); });
+      box.appendChild(b);
+    });
+    updateBasket();
+    show("s-shop");
+  }
+
+  function toggle(item, btn){
+    if(picked[item]){ delete picked[item]; btn.classList.remove("picked"); btn.setAttribute("aria-pressed","false"); }
+    else { picked[item] = true; btn.classList.add("picked"); btn.setAttribute("aria-pressed","true"); }
+    updateBasket();
+  }
+
+  function updateBasket(){
+    var n = Object.keys(picked).length;
+    el("basket").textContent = n === 1 ? "1 in the basket" : n + " in the basket";
+    el("done").disabled = n === 0;
+  }
+
+  /* ---------- result ---------- */
+  var BANDS = [
+    {min:95, t:"Full basket, nothing extra", s:"Every item, no wrong turns. That\u2019s the whole list surviving the gap."},
+    {min:75, t:"A good shop",                s:"Nearly all of it made the journey. The ones that slip are usually the ones you didn\u2019t picture."},
+    {min:50, t:"Most of it made it",         s:"Solid. Try grouping the list into pairs while you read it tomorrow \u2014 two things at a time travels better than six."},
+    {min:25, t:"A few came home",            s:"Lists are slippery. Say each one out loud and picture where it sits in the shop \u2014 that one change tends to move the number a lot."},
+    {min:0,  t:"That\u2019s why we write them down", s:"First runs are always rough. Come back tomorrow \u2014 a different game, a different muscle."}
+  ];
+
+  function finish(){
+    var hits = 0, misses = 0, falses = 0;
+    targets.forEach(function(t){ if(picked[t]) hits++; else misses++; });
+    Object.keys(picked).forEach(function(p){ if(targets.indexOf(p) === -1) falses++; });
+
+    /* a wrong pick costs half an item, not a whole one — the point is what
+       you remembered, and near-misses shouldn't wipe out a decent shop */
+    var raw = (hits - falses * 0.5) / targets.length;
+    var total = Math.round(Math.max(0, Math.min(1, raw)) * 100);
+
+    el("score").textContent = total;
+    el("bHits").textContent = hits;
+    el("bMiss").textContent = misses;
+    el("bFalse").textContent = falses;
+
+    var b = BANDS[BANDS.length-1], i;
+    for(i=0;i<BANDS.length;i++){ if(total >= BANDS[i].min){ b = BANDS[i]; break; } }
+    el("band").textContent = b.t;
+    el("bandsub").textContent = b.s;
+
+    var rev = el("review");
+    rev.innerHTML = "";
+    shelf.forEach(function(item){
+      var onList = targets.indexOf(item) > -1;
+      var took = !!picked[item];
+      var d = document.createElement("div");
+      d.className = "tile";
+      d.disabled = true;
+      if(onList && took)       { d.className += " hit";    d.innerHTML = item + '<span class="tag">On the list \u2014 got it</span>'; }
+      else if(onList && !took) { d.className += " missed"; d.innerHTML = item + '<span class="tag">On the list \u2014 left behind</span>'; }
+      else if(!onList && took) { d.className += " false";  d.innerHTML = item + '<span class="tag">Not on the list</span>'; }
+      else                     { d.style.opacity = ".4";   d.innerHTML = item + '<span class="tag">Not on the list</span>'; }
+      rev.appendChild(d);
+    });
+
+    show("s-result");
+  }
+
+  /* ---------- wiring ---------- */
+  el("go6").addEventListener("click", function(){ listSize = 6; startStudy(); });
+  el("go8").addEventListener("click", function(){ listSize = 8; startStudy(); });
+  el("ready").addEventListener("click", startPause);
+  el("done").addEventListener("click", finish);
+  el("again").addEventListener("click", startStudy);
+  el("switch").addEventListener("click", function(){ show("s-intro"); });
+})();
+</script>
+</body>
+</html>

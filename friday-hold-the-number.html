@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Friday — Hold The Number</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F3F0E7;
+    --card:#FBFAF5;
+    --edge:#DFDACB;
+    --ink:#23302A;
+    --ink-soft:#5C6A62;
+    --sage:#7D9A83;
+    --sage-deep:#4E6B58;
+    --mint:#D3E3D4;
+    --berry:#8A4F5E;
+    --amber:#C09A5E;
+    --display:"Newsreader", Georgia, "Times New Roman", serif;
+    --ui:"Figtree", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper);color:var(--ink);
+    font-family:var(--ui);font-size:18px;line-height:1.55;
+    -webkit-font-smoothing:antialiased;padding:20px 16px 56px;
+  }
+  .wrap{max-width:820px;margin:0 auto}
+
+  .masthead{display:flex;align-items:baseline;gap:12px;padding-bottom:14px;margin-bottom:26px;border-bottom:1px solid var(--edge)}
+  .day{font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--sage-deep)}
+  .masthead h1{font-family:var(--display);font-weight:400;font-size:26px;margin:0;letter-spacing:-.01em}
+  .masthead .of{margin-left:auto;font-size:13px;color:var(--ink-soft)}
+
+  .screen{display:none;animation:rise .45s ease both}
+  .screen.on{display:block}
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  .lede{font-family:var(--display);font-size:24px;line-height:1.35;margin:0 0 12px;max-width:34ch}
+  .sub{color:var(--ink-soft);margin:0 0 26px;max-width:52ch}
+
+  button{font-family:var(--ui);font-size:18px;cursor:pointer}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;
+    min-height:58px;padding:0 30px;border-radius:100px;
+    background:var(--sage-deep);color:#fff;border:1px solid var(--sage-deep);
+    font-weight:600;transition:background .2s ease,transform .12s ease;
+  }
+  .btn:hover{background:#3F5A48}
+  .btn:active{transform:translateY(1px)}
+  .btn.ghost{background:transparent;color:var(--sage-deep);border-color:var(--sage)}
+  .btn.ghost:hover{background:var(--mint)}
+  .btn:disabled{opacity:.4;cursor:default}
+  :focus-visible{outline:3px solid var(--berry);outline-offset:3px}
+  .row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+
+  .timerbar{height:5px;background:var(--edge);border-radius:100px;overflow:hidden;margin-bottom:26px}
+  .timerbar i{display:block;height:100%;background:var(--sage);width:100%}
+
+  .stagehead{
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:18px;
+  }
+
+  /* ---------- digit boxes ---------- */
+  .digits{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 26px}
+  .digits span{
+    width:clamp(38px,10vw,58px);height:clamp(52px,13vw,74px);
+    display:flex;align-items:center;justify-content:center;
+    background:var(--card);border:1.5px solid var(--edge);border-radius:3px;
+    font-family:var(--display);font-size:clamp(28px,7.6vw,40px);color:var(--ink);
+  }
+  .digits.showing span{background:var(--mint);border-color:var(--sage)}
+  .digits span.filled{border-color:var(--sage-deep)}
+  .digits.right span{background:var(--mint);border-color:var(--sage-deep)}
+  .digits.wrong span{background:#F4E9EB;border-color:var(--berry);color:var(--berry)}
+
+  .instruction{
+    text-align:center;font-family:var(--display);font-size:22px;
+    margin:0 0 22px;color:var(--ink);
+  }
+  .instruction em{font-style:italic;color:var(--berry)}
+
+  /* ---------- keypad ---------- */
+  .pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:380px;margin:0 auto 20px}
+  .pad button{
+    min-height:66px;border-radius:8px;
+    background:var(--card);border:1.5px solid var(--edge);color:var(--ink);
+    font-family:var(--display);font-size:30px;
+    transition:background .14s ease,border-color .14s ease,transform .1s ease;
+  }
+  .pad button:hover:not(:disabled){border-color:var(--sage);background:var(--mint)}
+  .pad button:active:not(:disabled){transform:translateY(1px)}
+  .pad button:disabled{opacity:.35;cursor:default}
+  .pad button.util{font-family:var(--ui);font-size:16px;font-weight:600;letter-spacing:.04em}
+  .pad button.go{background:var(--sage-deep);color:#fff;border-color:var(--sage-deep)}
+  .pad button.go:hover:not(:disabled){background:#3F5A48;border-color:#3F5A48}
+
+  .verdict{min-height:32px;text-align:center;font-size:17px;color:var(--ink-soft);margin:0}
+  .verdict.good{color:var(--sage-deep);font-weight:600}
+  .verdict.bad{color:var(--berry)}
+
+  /* ---------- result ---------- */
+  .scorewrap{text-align:center;padding:14px 0 6px}
+  .bignum{font-family:var(--display);font-size:88px;line-height:1;letter-spacing:-.03em;display:block}
+  .outof{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft)}
+  .band{font-family:var(--display);font-style:italic;font-size:26px;margin:18px 0 6px}
+  .breakdown{
+    display:flex;justify-content:center;gap:40px;flex-wrap:wrap;
+    margin:26px 0 26px;padding:20px 0;border-top:1px solid var(--edge);border-bottom:1px solid var(--edge);
+  }
+  .breakdown div{text-align:center}
+  .breakdown b{font-family:var(--display);font-size:38px;font-weight:400;display:block;line-height:1}
+  .breakdown span{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+
+  footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--edge);font-size:13px;line-height:1.6;color:var(--ink-soft)}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <span class="day">Friday</span>
+    <h1>Hold The Number</h1>
+    <span class="of">Daily practice</span>
+  </div>
+
+  <!-- INTRO -->
+  <section class="screen on" id="s-intro">
+    <p class="lede">Somebody reads out a number. You have to keep hold of it just long enough to use it.</p>
+    <p class="sub">A number appears, then disappears, and you tap it back in. Each one you get right, the next is a digit longer. Halfway through, you&rsquo;ll be asked to give them back the other way round &mdash; last digit first.</p>
+    <div class="row" style="margin-bottom:22px">
+      <button class="btn" id="go">Start</button>
+    </div>
+    <p style="font-size:15px;color:var(--ink-soft);margin:0">The shortest game of the week &mdash; about two minutes.</p>
+  </section>
+
+  <!-- SHOWING -->
+  <section class="screen" id="s-show">
+    <div class="stagehead"><span id="showStage">Forwards</span><span id="showLen">3 digits</span></div>
+    <div class="timerbar"><i id="tbar"></i></div>
+    <p class="instruction" id="showInstr">Read it, then hold on to it.</p>
+    <div class="digits showing" id="showDigits"></div>
+  </section>
+
+  <!-- ENTERING -->
+  <section class="screen" id="s-enter">
+    <div class="stagehead"><span id="enterStage">Forwards</span><span id="enterLen">3 digits</span></div>
+    <p class="instruction" id="enterInstr">Tap it back in.</p>
+    <div class="digits" id="entryDigits"></div>
+    <div class="pad" id="pad"></div>
+    <p class="verdict" id="verdict"></p>
+  </section>
+
+  <!-- TURN -->
+  <section class="screen" id="s-turn">
+    <p class="lede">Now the other way round.</p>
+    <p class="sub">Same idea, but this time tap the number in backwards &mdash; last digit first, first digit last. It&rsquo;s a good deal harder, so it starts short again.</p>
+    <div class="row"><button class="btn" id="goBack">I&rsquo;m ready</button></div>
+  </section>
+
+  <!-- RESULT -->
+  <section class="screen" id="s-result">
+    <div class="scorewrap">
+      <span class="bignum" id="score">0</span>
+      <span class="outof">out of 100</span>
+      <p class="band" id="band"></p>
+      <p class="sub" style="margin:0 auto;text-align:center" id="bandsub"></p>
+    </div>
+    <div class="breakdown">
+      <div><b id="fSpan">0</b><span>Digits forwards</span></div>
+      <div><b id="bSpan">0</b><span>Digits backwards</span></div>
+    </div>
+    <p class="sub" style="text-align:center;margin:0 auto 28px" id="context"></p>
+    <div class="row" style="justify-content:center">
+      <button class="btn" id="again">Go again</button>
+    </div>
+  </section>
+
+  <footer>
+    Nothing is saved. Your score disappears the moment you close this page &mdash; come back tomorrow for a different game.
+    This is a memory exercise for practice and enjoyment, not a test or an assessment of your health.
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var START_FWD = 3, START_BACK = 3, MAX_LEN = 9, TRIES_PER_LENGTH = 2;
+
+  function el(id){ return document.getElementById(id); }
+
+  /* A run like 4-5-6-7 or a triple is far easier to hold than it looks,
+     so those get rejected and redrawn. */
+  function makeNumber(len){
+    var attempt = 0;
+    while(attempt < 60){
+      attempt++;
+      var d = [], i;
+      for(i=0;i<len;i++){ d.push(Math.floor(Math.random()*10)); }
+
+      var bad = false, run = 1, same = 1;
+      for(i=1;i<d.length;i++){
+        if(d[i] === d[i-1] + 1 || d[i] === d[i-1] - 1){ run++; } else { run = 1; }
+        if(d[i] === d[i-1]){ same++; } else { same = 1; }
+        if(run >= 3 || same >= 3){ bad = true; break; }
+      }
+      if(!bad) return d;
+    }
+    return d;
+  }
+
+  /* ---------- state ---------- */
+  var phase = "fwd";           /* fwd | back */
+  var len = START_FWD;
+  var triesLeft = TRIES_PER_LENGTH;
+  var current = [];
+  var entry = [];
+  var bestFwd = 0, bestBack = 0;
+  var timer = null;
+
+  function show(id){
+    var all = document.querySelectorAll(".screen"), i;
+    for(i=0;i<all.length;i++){ all[i].classList.remove("on"); }
+    el(id).classList.add("on");
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
+
+  function plural(n){ return n + (n === 1 ? " digit" : " digits"); }
+
+  /* ---------- showing the number ---------- */
+  function showNumber(){
+    current = makeNumber(len);
+    entry = [];
+
+    var label = phase === "fwd" ? "Forwards" : "Backwards";
+    el("showStage").textContent = label;
+    el("enterStage").textContent = label;
+    el("showLen").textContent = plural(len);
+    el("enterLen").textContent = plural(len);
+    el("showInstr").textContent = phase === "fwd"
+      ? "Read it, then hold on to it."
+      : "Read it \u2014 you\u2019ll be giving it back in reverse.";
+
+    var html = "", i;
+    for(i=0;i<current.length;i++){ html += '<span>'+current[i]+'</span>'; }
+    el("showDigits").innerHTML = html;
+    el("showDigits").className = "digits showing";
+
+    show("s-show");
+
+    var ms = Math.max(4000, len * 1200);
+    var bar = el("tbar");
+    bar.style.transition = "none";
+    bar.style.width = "100%";
+    /* let the browser apply the reset before starting the sweep */
+    setTimeout(function(){
+      bar.style.transition = "width " + ms + "ms linear";
+      bar.style.width = "0%";
+    }, 30);
+
+    clearTimeout(timer);
+    timer = setTimeout(startEntry, ms + 60);
+  }
+
+  /* ---------- entering it back ---------- */
+  function startEntry(){
+    el("enterInstr").innerHTML = phase === "fwd"
+      ? "Tap it back in."
+      : "Tap it back in <em>backwards</em> \u2014 last digit first.";
+    el("verdict").textContent = "";
+    el("verdict").className = "verdict";
+    drawEntry();
+    drawPad();
+    show("s-enter");
+  }
+
+  function drawEntry(){
+    var html = "", i;
+    for(i=0;i<len;i++){
+      html += '<span class="'+(i < entry.length ? "filled" : "")+'">'+(i < entry.length ? entry[i] : "")+'</span>';
+    }
+    var box = el("entryDigits");
+    box.className = "digits";
+    box.innerHTML = html;
+  }
+
+  function drawPad(){
+    var pad = el("pad");
+    pad.innerHTML = "";
+    var keys = ["1","2","3","4","5","6","7","8","9","del","0","go"], i;
+
+    keys.forEach(function(k){
+      var b = document.createElement("button");
+      b.type = "button";
+      if(k === "del"){
+        b.className = "util";
+        b.textContent = "Delete";
+        b.disabled = entry.length === 0;
+        b.addEventListener("click", function(){ entry.pop(); drawEntry(); drawPad(); });
+      } else if(k === "go"){
+        b.className = "util go";
+        b.textContent = "Done";
+        b.disabled = entry.length !== len;
+        b.addEventListener("click", judge);
+      } else {
+        b.textContent = k;
+        b.disabled = entry.length >= len;
+        b.addEventListener("click", function(){
+          if(entry.length < len){ entry.push(parseInt(k,10)); drawEntry(); drawPad(); }
+        });
+      }
+      pad.appendChild(b);
+    });
+  }
+
+  /* ---------- judging ---------- */
+  function expected(){
+    return phase === "fwd" ? current.slice() : current.slice().reverse();
+  }
+
+  function judge(){
+    var want = expected(), ok = true, i;
+    for(i=0;i<want.length;i++){ if(entry[i] !== want[i]){ ok = false; break; } }
+
+    var pad = el("pad").querySelectorAll("button");
+    for(i=0;i<pad.length;i++){ pad[i].disabled = true; }
+
+    var box = el("entryDigits");
+
+    if(ok){
+      box.className = "digits right";
+      el("verdict").textContent = "Right \u2014 " + plural(len) + " held.";
+      el("verdict").className = "verdict good";
+      if(phase === "fwd"){ bestFwd = Math.max(bestFwd, len); }
+      else { bestBack = Math.max(bestBack, len); }
+
+      setTimeout(function(){
+        len++;
+        triesLeft = TRIES_PER_LENGTH;
+        if(len > MAX_LEN){ nextPhase(); } else { showNumber(); }
+      }, 1200);
+    } else {
+      box.className = "digits wrong";
+      triesLeft--;
+      el("verdict").textContent = "It was " + want.join(" ") + ".";
+      el("verdict").className = "verdict bad";
+
+      setTimeout(function(){
+        if(triesLeft > 0){ showNumber(); } else { nextPhase(); }
+      }, 2200);
+    }
+  }
+
+  function nextPhase(){
+    if(phase === "fwd"){
+      phase = "back";
+      len = START_BACK;
+      triesLeft = TRIES_PER_LENGTH;
+      show("s-turn");
+    } else {
+      finish();
+    }
+  }
+
+  /* ---------- result ---------- */
+  var BANDS = [
+    {min:80, t:"A long line to hold",      s:"That is a lot of digits to keep in the air at once, especially in reverse."},
+    {min:60, t:"You held the line",        s:"Comfortably in the usual range, and the backwards half is the half that counts."},
+    {min:40, t:"Enough to dial",           s:"Solid. Saying the digits under your breath while they\u2019re on screen tends to add one to the count."},
+    {min:20, t:"Short but steady",         s:"Try breaking the number into two halves as you read it \u2014 two small chunks travel better than one long one."},
+    {min:0,  t:"Everyone starts here",     s:"First runs are always rough. Come back tomorrow \u2014 a different game, a different muscle."}
+  ];
+
+  function finish(){
+    var fPts = Math.max(0, Math.min(1, (bestFwd - 2) / 6)) * 50;
+    var bPts = Math.max(0, Math.min(1, (bestBack - 2) / 4)) * 50;
+    var total = Math.round(fPts + bPts);
+
+    el("score").textContent = total;
+    el("fSpan").textContent = bestFwd;
+    el("bSpan").textContent = bestBack;
+
+    var b = BANDS[BANDS.length-1], i;
+    for(i=0;i<BANDS.length;i++){ if(total >= BANDS[i].min){ b = BANDS[i]; break; } }
+    el("band").textContent = b.t;
+    el("bandsub").textContent = b.s;
+
+    var note;
+    if(bestBack === 0) note = "The backwards half is the harder of the two by a long way \u2014 plenty of people get none of it on a first go.";
+    else if(bestBack >= bestFwd) note = "Your backwards run matched your forwards one, which is unusual \u2014 most people lose a digit or two when the order flips.";
+    else note = "Losing a digit or two going backwards is what almost everyone does \u2014 holding the number and turning it round are two jobs at once.";
+    el("context").textContent = note;
+
+    show("s-result");
+  }
+
+  /* ---------- wiring ---------- */
+  function reset(){
+    phase = "fwd"; len = START_FWD; triesLeft = TRIES_PER_LENGTH;
+    bestFwd = 0; bestBack = 0;
+    showNumber();
+  }
+
+  el("go").addEventListener("click", reset);
+  el("again").addEventListener("click", reset);
+  el("goBack").addEventListener("click", showNumber);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Wednesday — Where Did I Put It?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F3F0E7;
+    --card:#FBFAF5;
+    --edge:#DFDACB;
+    --ink:#23302A;
+    --ink-soft:#5C6A62;
+    --sage:#7D9A83;
+    --sage-deep:#4E6B58;
+    --mint:#D3E3D4;
+    --berry:#8A4F5E;
+    --amber:#C09A5E;
+    --display:"Newsreader", Georgia, "Times New Roman", serif;
+    --ui:"Figtree", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper);color:var(--ink);
+    font-family:var(--ui);font-size:18px;line-height:1.55;
+    -webkit-font-smoothing:antialiased;padding:20px 16px 56px;
+  }
+  .wrap{max-width:820px;margin:0 auto}
+
+  .masthead{display:flex;align-items:baseline;gap:12px;padding-bottom:14px;margin-bottom:26px;border-bottom:1px solid var(--edge)}
+  .day{font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--sage-deep)}
+  .masthead h1{font-family:var(--display);font-weight:400;font-size:26px;margin:0;letter-spacing:-.01em}
+  .masthead .of{margin-left:auto;font-size:13px;color:var(--ink-soft)}
+
+  .screen{display:none;animation:rise .45s ease both}
+  .screen.on{display:block}
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  .lede{font-family:var(--display);font-size:24px;line-height:1.35;margin:0 0 12px;max-width:34ch}
+  .sub{color:var(--ink-soft);margin:0 0 26px;max-width:52ch}
+
+  button{font-family:var(--ui);font-size:18px;cursor:pointer}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;
+    min-height:58px;padding:0 30px;border-radius:100px;
+    background:var(--sage-deep);color:#fff;border:1px solid var(--sage-deep);
+    font-weight:600;transition:background .2s ease,transform .12s ease;
+  }
+  .btn:hover{background:#3F5A48}
+  .btn:active{transform:translateY(1px)}
+  .btn.ghost{background:transparent;color:var(--sage-deep);border-color:var(--sage)}
+  .btn.ghost:hover{background:var(--mint)}
+  :focus-visible{outline:3px solid var(--berry);outline-offset:3px}
+  .row{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+
+  .timerbar{height:5px;background:var(--edge);border-radius:100px;overflow:hidden;margin-bottom:22px}
+  .timerbar i{display:block;height:100%;background:var(--sage);width:100%;transition:width 1s linear}
+
+  /* ---------- floor plan ---------- */
+  .plan{
+    background:var(--card);border:1px solid var(--edge);border-radius:3px;
+    padding:14px;margin-bottom:24px;
+    box-shadow:0 2px 0 rgba(35,48,42,.04);
+  }
+  .plan svg{width:100%;height:auto;display:block}
+  .rm-fill{fill:var(--card);stroke:var(--ink);stroke-width:3}
+  .rm-name{
+    font-family:var(--ui);font-size:13px;font-weight:600;
+    letter-spacing:.14em;text-transform:uppercase;fill:var(--ink-soft);
+  }
+  .rm-obj-label{font-family:var(--display);font-style:italic;font-size:17px;fill:var(--ink);text-anchor:middle}
+  .hit{fill:transparent;cursor:pointer;transition:fill .15s ease}
+  .tappable .hit:hover{fill:var(--mint);fill-opacity:.85}
+  .tappable .hit:focus-visible{fill:var(--mint);fill-opacity:.85}
+  .rm-right .rm-fill{fill:var(--mint);stroke:var(--sage-deep)}
+  .rm-wrong .rm-fill{fill:#F4E9EB;stroke:var(--berry)}
+
+  /* ---------- ask ---------- */
+  .quizhead{
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:18px;
+  }
+  .ask{
+    display:flex;align-items:center;gap:16px;justify-content:center;
+    background:var(--card);border:1px solid var(--edge);border-radius:3px;
+    padding:16px 22px;margin-bottom:20px;
+  }
+  .ask svg{width:56px;height:56px;flex:0 0 auto}
+  .ask .q{font-family:var(--ui);font-size:17px;color:var(--ink-soft);line-height:1.4}
+  .ask .q b{
+    font-family:var(--display);font-weight:500;font-style:italic;
+    display:block;font-size:27px;color:var(--ink);line-height:1.2;
+  }
+  .verdict{min-height:30px;text-align:center;margin-top:16px;font-size:17px;color:var(--ink-soft)}
+
+  /* ---------- pause ---------- */
+  .seedbox{
+    background:var(--card);border:1px solid var(--edge);border-radius:3px;
+    padding:22px;margin-bottom:22px;min-height:190px;
+    display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:center;
+  }
+  .seedbox svg{width:38px;height:38px}
+  .counts{display:flex;gap:10px;flex-wrap:wrap}
+  .counts button{
+    min-width:62px;min-height:58px;border-radius:6px;border:1.5px solid var(--edge);
+    background:var(--card);font-family:var(--display);font-size:22px;color:var(--ink);
+  }
+  .counts button:hover{border-color:var(--sage);background:var(--mint)}
+
+  /* ---------- result ---------- */
+  .scorewrap{text-align:center;padding:14px 0 6px}
+  .bignum{font-family:var(--display);font-size:88px;line-height:1;letter-spacing:-.03em;display:block}
+  .outof{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft)}
+  .band{font-family:var(--display);font-style:italic;font-size:26px;margin:18px 0 6px}
+  .breakdown{
+    display:flex;justify-content:center;gap:34px;flex-wrap:wrap;
+    margin:26px 0 30px;padding:20px 0;border-top:1px solid var(--edge);border-bottom:1px solid var(--edge);
+  }
+  .breakdown div{text-align:center}
+  .breakdown b{font-family:var(--display);font-size:30px;font-weight:400;display:block}
+  .breakdown span{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+  .recap{display:grid;gap:10px;grid-template-columns:1fr;margin-bottom:30px}
+  @media(min-width:560px){.recap{grid-template-columns:1fr 1fr}}
+  .recap div{
+    display:flex;align-items:center;gap:12px;
+    background:var(--card);border:1px solid var(--edge);border-radius:3px;padding:10px 14px;
+    font-family:var(--display);font-size:19px;
+  }
+  .recap svg{width:34px;height:34px;flex:0 0 auto}
+  .recap .where{font-family:var(--ui);font-size:14px;color:var(--ink-soft);margin-left:auto;text-align:right}
+
+  footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--edge);font-size:13px;line-height:1.6;color:var(--ink-soft)}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <span class="day">Wednesday</span>
+    <h1>Where Did I Put It?</h1>
+    <span class="of">Daily practice</span>
+  </div>
+
+  <!-- INTRO -->
+  <section class="screen on" id="s-intro">
+    <p class="lede">You had them ten minutes ago. You&rsquo;ve been in four rooms since. Now retrace it.</p>
+    <p class="sub">A few everyday things get left around the house. Learn where each one ended up, take a short break, then say which room you left it in &mdash; twice over.</p>
+    <div class="row" style="margin-bottom:22px">
+      <button class="btn" id="go4">Start with four things</button>
+      <button class="btn ghost" id="go6">Make it six</button>
+    </div>
+    <p style="font-size:15px;color:var(--ink-soft);margin:0">Four takes about three minutes.</p>
+  </section>
+
+  <!-- STUDY -->
+  <section class="screen" id="s-study">
+    <div class="timerbar"><i id="tbar"></i></div>
+    <p class="sub" style="margin-bottom:20px">Walk through it in your head, room by room. Picturing yourself putting each thing down works better than staring at the page.</p>
+    <div class="plan" id="planStudy"></div>
+    <div class="row"><button class="btn ghost" id="ready">I&rsquo;ve got them</button></div>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="screen" id="s-quiz">
+    <div class="quizhead"><span id="qround">Round one</span><span id="qcount">1 of 4</span></div>
+    <div class="ask" id="ask"></div>
+    <div class="plan tappable" id="planQuiz"></div>
+    <p class="verdict" id="verdict"></p>
+  </section>
+
+  <!-- PAUSE -->
+  <section class="screen" id="s-pause">
+    <p class="lede">Put the kettle on.</p>
+    <p class="sub">Count the seeds. This bit isn&rsquo;t scored &mdash; it&rsquo;s here to break the thread, so the second round tests what actually stuck.</p>
+    <div class="seedbox" id="seedbox"></div>
+    <p style="margin:0 0 12px">How many did you count?</p>
+    <div class="counts" id="counts"></div>
+  </section>
+
+  <!-- RESULT -->
+  <section class="screen" id="s-result">
+    <div class="scorewrap">
+      <span class="bignum" id="score">0</span>
+      <span class="outof">out of 100</span>
+      <p class="band" id="band"></p>
+      <p class="sub" style="margin:0 auto;text-align:center" id="bandsub"></p>
+    </div>
+    <div class="breakdown">
+      <div><b id="r1">0/4</b><span>Straight away</span></div>
+      <div><b id="r2">0/4</b><span>After the break</span></div>
+    </div>
+    <div class="recap" id="recap"></div>
+    <div class="row" style="justify-content:center">
+      <button class="btn" id="again">Play a new round</button>
+      <button class="btn ghost" id="switch">Change the number of things</button>
+    </div>
+  </section>
+
+  <footer>
+    Nothing is saved. Your score disappears the moment you close this page &mdash; come back tomorrow for a different game.
+    This is a memory exercise for practice and enjoyment, not a test or an assessment of your health.
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var INK = "#23302A", SAGE = "#4E6B58", MINT = "#D3E3D4", AMBER = "#C09A5E", BERRY = "#8A4F5E";
+
+  /* ---------- rooms ---------- */
+  var ROOMS = [
+    {id:"kitchen", n:"Kitchen",     x:6,   y:6,   w:200, h:180},
+    {id:"living",  n:"Living room", x:212, y:6,   w:200, h:180},
+    {id:"hall",    n:"Hallway",     x:418, y:6,   w:176, h:180},
+    {id:"bath",    n:"Bathroom",    x:6,   y:192, w:170, h:180},
+    {id:"bed",     n:"Bedroom",     x:182, y:192, w:230, h:180},
+    {id:"study",   n:"Study",       x:418, y:192, w:176, h:180}
+  ];
+
+  /* ---------- objects, drawn in a 40x40 box ---------- */
+  function icon(kind){
+    var s = '<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">';
+    if(kind === "glasses"){
+      s += '<g fill="none" stroke="'+INK+'" stroke-width="2.4"><circle cx="12" cy="21" r="7"/><circle cx="28" cy="21" r="7"/><path d="M19 20 h2"/><path d="M5 18 L1 15 M35 18 L39 15"/></g>';
+    } else if(kind === "keys"){
+      s += '<g fill="none" stroke="'+INK+'" stroke-width="2.4" stroke-linecap="round"><circle cx="13" cy="13" r="7"/><path d="M18 18 L33 33"/><path d="M27 27 l-4 4 M31 31 l-4 4"/></g>';
+    } else if(kind === "remote"){
+      s += '<rect x="13" y="4" width="14" height="32" rx="4" fill="none" stroke="'+INK+'" stroke-width="2.4"/>'
+         + '<g fill="'+SAGE+'"><circle cx="17.5" cy="12" r="2"/><circle cx="22.5" cy="12" r="2"/><circle cx="17.5" cy="19" r="2"/><circle cx="22.5" cy="19" r="2"/><circle cx="17.5" cy="26" r="2"/><circle cx="22.5" cy="26" r="2"/></g>';
+    } else if(kind === "phone"){
+      s += '<rect x="11" y="3" width="18" height="34" rx="4" fill="none" stroke="'+INK+'" stroke-width="2.4"/>'
+         + '<rect x="14" y="8" width="12" height="21" fill="'+MINT+'"/><circle cx="20" cy="33" r="1.8" fill="'+INK+'"/>';
+    } else if(kind === "wallet"){
+      s += '<rect x="5" y="11" width="30" height="20" rx="3" fill="none" stroke="'+INK+'" stroke-width="2.4"/>'
+         + '<path d="M5 17 h30" stroke="'+INK+'" stroke-width="2"/><rect x="22" y="20" width="9" height="6" rx="1.5" fill="'+SAGE+'"/>';
+    } else if(kind === "umbrella"){
+      s += '<path d="M4 20 a16 16 0 0 1 32 0 Z" fill="'+MINT+'" stroke="'+INK+'" stroke-width="2.4"/>'
+         + '<path d="M20 20 v13 a5 5 0 0 1 -9 0" fill="none" stroke="'+INK+'" stroke-width="2.4" stroke-linecap="round"/>';
+    } else if(kind === "torch"){
+      s += '<path d="M12 12 h16 v16 h-16 z" fill="none" stroke="'+INK+'" stroke-width="2.4"/>'
+         + '<path d="M12 14 L4 8 v24 l8 -6 Z" fill="'+MINT+'" stroke="'+INK+'" stroke-width="2.2"/>'
+         + '<path d="M28 17 h7 M28 23 h7" stroke="'+INK+'" stroke-width="2.2" stroke-linecap="round"/>';
+    } else if(kind === "scissors"){
+      s += '<g fill="none" stroke="'+INK+'" stroke-width="2.4" stroke-linecap="round"><path d="M9 6 L27 28 M31 6 L13 28"/><circle cx="11" cy="32" r="4.5"/><circle cx="29" cy="32" r="4.5"/></g>';
+    } else if(kind === "book"){
+      s += '<path d="M7 6 h24 a3 3 0 0 1 3 3 v25 a3 3 0 0 0 -3 -3 h-24 z" fill="none" stroke="'+INK+'" stroke-width="2.4"/>'
+         + '<path d="M13 6 v25" stroke="'+INK+'" stroke-width="2"/><path d="M18 14 h11 M18 20 h11" stroke="'+SAGE+'" stroke-width="2" stroke-linecap="round"/>';
+    } else if(kind === "mug"){
+      s += '<path d="M8 12 h20 v14 a6 6 0 0 1 -6 6 h-8 a6 6 0 0 1 -6 -6 z" fill="none" stroke="'+INK+'" stroke-width="2.4"/>'
+         + '<path d="M28 16 h4 a4 4 0 0 1 0 8 h-4" fill="none" stroke="'+INK+'" stroke-width="2.4"/>'
+         + '<path d="M8 17 h20" stroke="'+MINT+'" stroke-width="0"/>';
+    } else if(kind === "watch"){
+      s += '<circle cx="20" cy="20" r="9" fill="none" stroke="'+INK+'" stroke-width="2.4"/>'
+         + '<path d="M15 12 L16 4 h8 l1 8 M15 28 L16 36 h8 l1 -8" fill="none" stroke="'+INK+'" stroke-width="2.4"/>'
+         + '<path d="M20 16 v4 h3" fill="none" stroke="'+SAGE+'" stroke-width="2" stroke-linecap="round"/>';
+    } else if(kind === "letter"){
+      s += '<rect x="4" y="11" width="32" height="20" rx="2" fill="none" stroke="'+INK+'" stroke-width="2.4"/>'
+         + '<path d="M4 13 L20 24 L36 13" fill="none" stroke="'+INK+'" stroke-width="2.2"/>';
+    } else if(kind === "gloves"){
+      s += '<path d="M11 36 v-14 a4 4 0 0 1 4 -4 h2 v-11 a3 3 0 0 1 6 0 v11 h2 a4 4 0 0 1 4 4 v14 z" fill="none" stroke="'+INK+'" stroke-width="2.4"/>'
+         + '<path d="M11 28 h18" stroke="'+SAGE+'" stroke-width="2"/>';
+    } else { /* pen */
+      s += '<path d="M8 32 L11 24 L28 7 a3.5 3.5 0 0 1 5 5 L16 29 Z" fill="none" stroke="'+INK+'" stroke-width="2.4"/>'
+         + '<path d="M11 24 L16 29" stroke="'+INK+'" stroke-width="2.2"/>';
+    }
+    return s + '</svg>';
+  }
+
+  var THINGS = [
+    {k:"glasses",  n:"Reading glasses"},
+    {k:"keys",     n:"House keys"},
+    {k:"remote",   n:"TV remote"},
+    {k:"phone",    n:"Mobile phone"},
+    {k:"wallet",   n:"Wallet"},
+    {k:"umbrella", n:"Umbrella"},
+    {k:"torch",    n:"Torch"},
+    {k:"scissors", n:"Scissors"},
+    {k:"book",     n:"Library book"},
+    {k:"mug",      n:"Favourite mug"},
+    {k:"watch",    n:"Wristwatch"},
+    {k:"letter",   n:"The post"},
+    {k:"gloves",   n:"Garden gloves"},
+    {k:"pen",      n:"Biro"}
+  ];
+
+  function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+  function shuffle(a){
+    var r=a.slice(), i, j, t;
+    for(i=r.length-1;i>0;i--){ j=Math.floor(Math.random()*(i+1)); t=r[i]; r[i]=r[j]; r[j]=t; }
+    return r;
+  }
+  function el(id){ return document.getElementById(id); }
+
+  /* ---------- plan drawing ---------- */
+  function drawPlan(placements, opts){
+    opts = opts || {};
+    var s = '<svg viewBox="0 0 600 378" xmlns="http://www.w3.org/2000/svg" role="img">';
+    ROOMS.forEach(function(r){
+      var cls = "";
+      if(opts.right === r.id) cls = " rm-right";
+      if(opts.wrong === r.id) cls = " rm-wrong";
+      s += '<g class="room'+cls+'" data-room="'+r.id+'">';
+      s += '<rect class="rm-fill" x="'+r.x+'" y="'+r.y+'" width="'+r.w+'" height="'+r.h+'" rx="2"/>';
+      s += '<text class="rm-name" x="'+(r.x+14)+'" y="'+(r.y+26)+'">'+r.n+'</text>';
+
+      var thing = placements ? placements[r.id] : null;
+      if(thing){
+        var cx = r.x + r.w/2, cy = r.y + r.h/2 + 2;
+        s += '<g transform="translate('+(cx-26)+','+(cy-40)+') scale(1.3)">'+icon(thing.k).replace(/^<svg[^>]*>/,'').replace(/<\/svg>$/,'')+'</g>';
+        s += '<text class="rm-obj-label" x="'+cx+'" y="'+(cy+40)+'">'+thing.n+'</text>';
+      }
+      s += '</g>';
+    });
+    if(opts.tappable){
+      ROOMS.forEach(function(r){
+        s += '<rect class="hit" data-hit="'+r.id+'" x="'+r.x+'" y="'+r.y+'" width="'+r.w+'" height="'+r.h+'" rx="2" tabindex="0" role="button" aria-label="'+r.n+'"/>';
+      });
+    }
+    return s + '</svg>';
+  }
+
+  /* ---------- state ---------- */
+  var howMany = 4, placed = [], byRoom = {}, order = [], qi = 0, round = 1, r1 = 0, r2 = 0, perThing = {}, timer = null, locked = false;
+
+  function show(id){
+    var all = document.querySelectorAll(".screen"), i;
+    for(i=0;i<all.length;i++){ all[i].classList.remove("on"); }
+    el(id).classList.add("on");
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
+
+  function roomName(id){
+    var i;
+    for(i=0;i<ROOMS.length;i++){ if(ROOMS[i].id === id) return ROOMS[i].n; }
+    return "";
+  }
+
+  /* ---------- study ---------- */
+  function startStudy(){
+    var things = shuffle(THINGS).slice(0, howMany);
+    var rooms = shuffle(ROOMS).slice(0, howMany);
+    placed = []; byRoom = {}; perThing = {}; r1 = 0; r2 = 0;
+
+    things.forEach(function(t, i){
+      var p = {k:t.k, n:t.n, room:rooms[i].id};
+      placed.push(p);
+      byRoom[rooms[i].id] = p;
+    });
+
+    el("planStudy").innerHTML = drawPlan(byRoom, {});
+    show("s-study");
+
+    var SECONDS = howMany * 12;
+    var left = SECONDS;
+    el("tbar").style.width = "100%";
+    clearInterval(timer);
+    timer = setInterval(function(){
+      left--;
+      el("tbar").style.width = Math.max(0,(left/SECONDS)*100) + "%";
+      if(left <= 0){ clearInterval(timer); startRound(1); }
+    }, 1000);
+  }
+
+  /* ---------- rounds ---------- */
+  function startRound(n){
+    clearInterval(timer);
+    round = n; qi = 0;
+    order = shuffle(placed.slice());
+    el("qround").textContent = n === 1 ? "Round one" : "Round two \u2014 after the break";
+    show("s-quiz");
+    askOne();
+  }
+
+  function askOne(){
+    var t = order[qi];
+    locked = false;
+    el("qcount").textContent = (qi+1) + " of " + order.length;
+    el("ask").innerHTML = icon(t.k) + '<span class="q"><b>' + t.n + '</b>Which room did you leave it in?</span>';
+    el("verdict").textContent = "";
+    el("planQuiz").innerHTML = drawPlan(null, {tappable:true});
+
+    var hits = el("planQuiz").querySelectorAll("[data-hit]"), i;
+    for(i=0;i<hits.length;i++){
+      (function(node){
+        node.addEventListener("click", function(){ answer(node.getAttribute("data-hit"), t); });
+        node.addEventListener("keydown", function(e){
+          if(e.key === "Enter" || e.key === " "){ e.preventDefault(); answer(node.getAttribute("data-hit"), t); }
+        });
+      })(hits[i]);
+    }
+  }
+
+  function answer(roomId, thing){
+    if(locked) return;
+    locked = true;
+
+    var correct = roomId === thing.room;
+    if(!perThing[thing.n]) perThing[thing.n] = {k:thing.k, room:thing.room, r1:false, r2:false};
+
+    if(correct){
+      if(round === 1){ r1++; perThing[thing.n].r1 = true; }
+      else { r2++; perThing[thing.n].r2 = true; }
+      el("verdict").textContent = "Yes \u2014 the " + roomName(thing.room).toLowerCase() + ".";
+      el("planQuiz").innerHTML = drawPlan(null, {right:thing.room});
+    } else {
+      el("verdict").textContent = "It was in the " + roomName(thing.room).toLowerCase() + ".";
+      el("planQuiz").innerHTML = drawPlan(null, {right:thing.room, wrong:roomId});
+    }
+
+    setTimeout(function(){
+      qi++;
+      if(qi < order.length){ askOne(); }
+      else if(round === 1){ startPause(); }
+      else { finish(); }
+    }, correct ? 1000 : 1800);
+  }
+
+  /* ---------- pause ---------- */
+  var seedRounds = 0;
+
+  function seedSVG(){
+    return '<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
+         + '<path d="M20 4 C30 12 32 26 20 36 C8 26 10 12 20 4 Z" fill="#7D9A83"/>'
+         + '<path d="M20 8 L20 33" stroke="#4E6B58" stroke-width="1.6" fill="none"/></svg>';
+  }
+
+  function startPause(){
+    seedRounds = 0;
+    show("s-pause");
+    nextSeeds();
+  }
+
+  function nextSeeds(){
+    var n = 4 + Math.floor(Math.random()*9), html = "", i;
+    for(i=0;i<n;i++){
+      html += '<span style="display:inline-block;transform:rotate('+Math.floor(Math.random()*360)+'deg)">'+seedSVG()+'</span>';
+    }
+    el("seedbox").innerHTML = html;
+
+    var opts = [], base = Math.max(3, n-2);
+    for(i=0;i<5;i++){ opts.push(base+i); }
+    opts = shuffle(opts);
+
+    var cbox = el("counts");
+    cbox.innerHTML = "";
+    opts.forEach(function(v){
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = v;
+      b.addEventListener("click", function(){
+        seedRounds++;
+        if(seedRounds >= 3){ startRound(2); } else { nextSeeds(); }
+      });
+      cbox.appendChild(b);
+    });
+  }
+
+  /* ---------- result ---------- */
+  var BANDS = [
+    {min:90, t:"You could find them blindfolded", s:"Every room, both times. Holding a map of where things are is a different job from remembering the things themselves \u2014 and you did it."},
+    {min:70, t:"A good map of the house",         s:"Most of them stayed put in your head through the break. That\u2019s the part that matters."},
+    {min:50, t:"Half the house",                  s:"Solid. Try saying the room out loud as you look \u2014 \u201Ckeys, kitchen\u201D \u2014 it gives the location something to hang on."},
+    {min:30, t:"A bit of a search",               s:"Places are slippery. Linking each thing to something already in that room tends to move the number more than staring harder does."},
+    {min:0,  t:"Everyone starts here",            s:"First runs are always rough. Come back tomorrow \u2014 a different game, a different muscle."}
+  ];
+
+  function finish(){
+    var n = placed.length;
+    var total = Math.round((r1/n)*40 + (r2/n)*60);
+    el("score").textContent = total;
+    el("r1").textContent = r1 + "/" + n;
+    el("r2").textContent = r2 + "/" + n;
+
+    var b = BANDS[BANDS.length-1], i;
+    for(i=0;i<BANDS.length;i++){ if(total >= BANDS[i].min){ b = BANDS[i]; break; } }
+    el("band").textContent = b.t;
+    el("bandsub").textContent = b.s;
+
+    var html = "";
+    placed.forEach(function(p){
+      var rec = perThing[p.n] || {r1:false,r2:false};
+      var got = (rec.r1?1:0) + (rec.r2?1:0);
+      var col = got === 2 ? SAGE : (got === 1 ? AMBER : BERRY);
+      html += '<div><span style="width:9px;height:9px;border-radius:50%;background:'+col+';flex:0 0 auto"></span>'
+           +  icon(p.k) + p.n
+           +  '<span class="where">'+roomName(p.room)+'</span></div>';
+    });
+    el("recap").innerHTML = html;
+
+    show("s-result");
+  }
+
+  /* ---------- wiring ---------- */
+  el("go4").addEventListener("click", function(){ howMany = 4; startStudy(); });
+  el("go6").addEventListener("click", function(){ howMany = 6; startStudy(); });
+  el("ready").addEventListener("click", function(){ clearInterval(timer); startRound(1); });
+  el("again").addEventListener("click", startStudy);
+  el("switch").addEventListener("click", function(){ show("s-intro"); });
+})();
+</script>
+</body>
+</html>

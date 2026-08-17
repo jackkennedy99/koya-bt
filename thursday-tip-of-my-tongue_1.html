@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Thursday — On The Tip Of My Tongue</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F3F0E7;
+    --card:#FBFAF5;
+    --edge:#DFDACB;
+    --ink:#23302A;
+    --ink-soft:#5C6A62;
+    --sage:#7D9A83;
+    --sage-deep:#4E6B58;
+    --mint:#D3E3D4;
+    --berry:#8A4F5E;
+    --amber:#C09A5E;
+    --display:"Newsreader", Georgia, "Times New Roman", serif;
+    --ui:"Figtree", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper);color:var(--ink);
+    font-family:var(--ui);font-size:18px;line-height:1.55;
+    -webkit-font-smoothing:antialiased;padding:20px 16px 56px;
+  }
+  .wrap{max-width:820px;margin:0 auto}
+
+  .masthead{display:flex;align-items:baseline;gap:12px;padding-bottom:14px;margin-bottom:26px;border-bottom:1px solid var(--edge)}
+  .day{font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--sage-deep)}
+  .masthead h1{font-family:var(--display);font-weight:400;font-size:26px;margin:0;letter-spacing:-.01em}
+  .masthead .of{margin-left:auto;font-size:13px;color:var(--ink-soft)}
+
+  .screen{display:none;animation:rise .45s ease both}
+  .screen.on{display:block}
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  .lede{font-family:var(--display);font-size:24px;line-height:1.35;margin:0 0 12px;max-width:34ch}
+  .sub{color:var(--ink-soft);margin:0 0 26px;max-width:52ch}
+
+  button{font-family:var(--ui);font-size:18px;cursor:pointer}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;
+    min-height:58px;padding:0 30px;border-radius:100px;
+    background:var(--sage-deep);color:#fff;border:1px solid var(--sage-deep);
+    font-weight:600;transition:background .2s ease,transform .12s ease;
+  }
+  .btn:hover{background:#3F5A48}
+  .btn:active{transform:translateY(1px)}
+  .btn.ghost{background:transparent;color:var(--sage-deep);border-color:var(--sage)}
+  .btn.ghost:hover{background:var(--mint)}
+  .btn.quiet{background:transparent;color:var(--ink-soft);border-color:var(--edge);font-weight:500}
+  .btn.quiet:hover{background:var(--card);color:var(--ink)}
+  .btn:disabled{opacity:.4;cursor:default}
+  :focus-visible{outline:3px solid var(--berry);outline-offset:3px}
+  .row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+
+  /* ---------- the clue card ---------- */
+  .quizhead{
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:16px;
+  }
+  .clue{
+    background:var(--card);border:1px solid var(--edge);border-radius:3px;
+    padding:26px 24px;margin-bottom:24px;
+    box-shadow:0 2px 0 rgba(35,48,42,.04);
+  }
+  .clue .eyebrow{
+    font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--ink-soft);display:block;margin-bottom:12px;
+  }
+  .clue p{
+    font-family:var(--display);font-size:26px;line-height:1.35;margin:0;
+  }
+
+  /* ---------- letter boxes ---------- */
+  .boxes{
+    display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:22px;
+  }
+  .boxes span{
+    width:clamp(26px,7.4vw,42px);height:clamp(34px,9.6vw,52px);
+    display:flex;align-items:center;justify-content:center;
+    background:var(--card);border:1.5px solid var(--edge);border-radius:2px;
+    font-family:var(--display);font-size:clamp(19px,5.4vw,28px);font-weight:500;
+    color:var(--ink);
+  }
+  .boxes span.given{background:var(--mint);border-color:var(--sage)}
+  .boxes span.gap{border:0;background:transparent;width:12px}
+
+  /* ---------- answering ---------- */
+  .answer{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .answer input{
+    flex:1 1 220px;min-height:62px;padding:0 18px;
+    background:var(--card);border:1.5px solid var(--edge);border-radius:6px;
+    font-family:var(--display);font-size:24px;color:var(--ink);
+    letter-spacing:.04em;
+  }
+  .answer input:focus{border-color:var(--sage);outline:none;box-shadow:0 0 0 3px var(--mint)}
+  .shake{animation:shake .32s ease}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+  .verdict{min-height:32px;font-size:17px;color:var(--ink-soft);margin:0 0 20px}
+  .verdict.good{color:var(--sage-deep);font-weight:600}
+  .verdict.bad{color:var(--berry)}
+
+  /* ---------- result ---------- */
+  .scorewrap{text-align:center;padding:14px 0 6px}
+  .bignum{font-family:var(--display);font-size:88px;line-height:1;letter-spacing:-.03em;display:block}
+  .outof{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft)}
+  .band{font-family:var(--display);font-style:italic;font-size:26px;margin:18px 0 6px}
+  .breakdown{
+    display:flex;justify-content:center;gap:34px;flex-wrap:wrap;
+    margin:26px 0 30px;padding:20px 0;border-top:1px solid var(--edge);border-bottom:1px solid var(--edge);
+  }
+  .breakdown div{text-align:center}
+  .breakdown b{font-family:var(--display);font-size:30px;font-weight:400;display:block}
+  .breakdown span{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+  .recap{display:grid;gap:10px;margin-bottom:30px}
+  .recap div{
+    display:flex;align-items:baseline;gap:12px;
+    background:var(--card);border:1px solid var(--edge);border-radius:3px;padding:11px 15px;
+  }
+  .recap .w{font-family:var(--display);font-size:21px;font-weight:500}
+  .recap .how{font-size:14px;color:var(--ink-soft);margin-left:auto;text-align:right;flex:0 0 auto}
+  .recap .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+
+  footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--edge);font-size:13px;line-height:1.6;color:var(--ink-soft)}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <span class="day">Thursday</span>
+    <h1>On The Tip Of My Tongue</h1>
+    <span class="of">Daily practice</span>
+  </div>
+
+  <!-- INTRO -->
+  <section class="screen on" id="s-intro">
+    <p class="lede">You know exactly what it is. You can picture it. The word just won&rsquo;t come.</p>
+    <p class="sub">A description, a first letter, and one box per letter. Take as long as you like &mdash; there&rsquo;s no clock on this one. If a word won&rsquo;t come, ask for another letter; it costs a few points, not the whole thing.</p>
+    <div class="row" style="margin-bottom:22px">
+      <button class="btn" id="go6">Start with six words</button>
+      <button class="btn ghost" id="go10">Make it ten</button>
+    </div>
+    <p style="font-size:15px;color:var(--ink-soft);margin:0">Six takes about four minutes, at your own pace.</p>
+  </section>
+
+  <!-- PLAY -->
+  <section class="screen" id="s-play">
+    <div class="quizhead"><span>Word <span id="qnum">1</span> of <span id="qtot">6</span></span><span id="qhints">No letters used</span></div>
+    <div class="clue">
+      <span class="eyebrow">What&rsquo;s the word?</span>
+      <p id="clue"></p>
+    </div>
+    <div class="boxes" id="boxes"></div>
+    <div class="answer">
+      <input id="guess" type="text" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" aria-label="Your answer">
+      <button class="btn" id="check">Check</button>
+    </div>
+    <p class="verdict" id="verdict"></p>
+    <div class="row">
+      <button class="btn ghost" id="hint">Give me another letter</button>
+      <button class="btn quiet" id="skip">I can&rsquo;t get it</button>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section class="screen" id="s-result">
+    <div class="scorewrap">
+      <span class="bignum" id="score">0</span>
+      <span class="outof">out of 100</span>
+      <p class="band" id="band"></p>
+      <p class="sub" style="margin:0 auto;text-align:center" id="bandsub"></p>
+    </div>
+    <div class="breakdown">
+      <div><b id="bClean">0</b><span>No help needed</span></div>
+      <div><b id="bHelp">0</b><span>With a letter or two</span></div>
+      <div><b id="bMiss">0</b><span>Wouldn&rsquo;t come</span></div>
+    </div>
+    <div class="recap" id="recap"></div>
+    <div class="row" style="justify-content:center">
+      <button class="btn" id="again">Play new words</button>
+      <button class="btn ghost" id="switch">Change the number</button>
+    </div>
+  </section>
+
+  <footer>
+    Nothing is saved. Your score disappears the moment you close this page &mdash; come back tomorrow for a different game.
+    This is a word exercise for practice and enjoyment, not a test or an assessment of your health.
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* Everyday things with slippery names — the words that go missing mid-sentence.
+     Each description has to point at one word and one word only. */
+  var WORDS = [
+    {w:"COLANDER",     d:"The bowl full of holes you tip pasta into to drain the water"},
+    {w:"SIEVE",        d:"The fine mesh you shake flour through to get the lumps out"},
+    {w:"LADLE",        d:"The deep, long-handled spoon for serving out soup"},
+    {w:"WHISK",        d:"The bundle of wire loops for beating eggs"},
+    {w:"GRATER",       d:"The four-sided box with rough holes for shredding cheese"},
+    {w:"CORKSCREW",    d:"The spiral tool for pulling a cork out of a bottle"},
+    {w:"SPATULA",      d:"The flat flexible blade for turning things in a frying pan"},
+    {w:"DECANTER",     d:"The glass bottle you pour wine into before serving it"},
+    {w:"TUMBLER",      d:"A straight-sided drinking glass with no stem or handle"},
+    {w:"SAUCER",       d:"The small dish a teacup sits on"},
+    {w:"CUTLERY",      d:"The word covering knives, forks and spoons together"},
+    {w:"CROCKERY",     d:"The word covering plates, cups and bowls together"},
+    {w:"PANTRY",       d:"The small room off a kitchen where food is stored"},
+    {w:"BANISTER",     d:"The rail you hold on to going up the stairs"},
+    {w:"THRESHOLD",    d:"The strip of floor you step over in a doorway"},
+    {w:"HINGE",        d:"The metal joint a door swings on"},
+    {w:"LATCH",        d:"The simple catch that holds a gate shut"},
+    {w:"MANTELPIECE",  d:"The shelf above a fireplace"},
+    {w:"RADIATOR",     d:"The ribbed metal panel on a wall that heats the room"},
+    {w:"WARDROBE",     d:"The tall cupboard you hang clothes in"},
+    {w:"CUSHION",      d:"The soft padded square you lean back against on a settee"},
+    {w:"PILLOWCASE",   d:"The cover you slip a pillow inside"},
+    {w:"CHIMNEY",      d:"The brick stack that carries smoke up from a fire"},
+    {w:"GUTTER",       d:"The channel along the edge of a roof that carries rainwater away"},
+    {w:"ATTIC",        d:"The room in the roof space of a house"},
+    {w:"CELLAR",       d:"The room underneath a house, below ground"},
+    {w:"PORCH",        d:"The small covered bit outside a front door"},
+    {w:"CONSERVATORY", d:"The glass room built onto the back of a house"},
+    {w:"CORRIDOR",     d:"The long narrow passage with rooms off either side"},
+    {w:"CARDIGAN",     d:"The knitted jacket that buttons up the front"},
+    {w:"THERMOS",      d:"The flask that keeps a drink hot for hours"},
+    {w:"TRELLIS",      d:"The criss-cross wooden frame a climbing plant grows up"},
+    {w:"WHEELBARROW",  d:"The one-wheeled barrow for shifting soil round a garden"},
+    {w:"GAZEBO",       d:"The small open garden shelter with a roof and no walls"},
+    {w:"SECATEURS",    d:"The strong short-bladed scissors for pruning branches"},
+    {w:"TROWEL",       d:"The little hand shovel for planting bulbs"},
+    {w:"GREENHOUSE",   d:"The glass building you grow tomatoes in"},
+    {w:"ALLOTMENT",    d:"The rented plot of ground for growing your own vegetables"},
+    {w:"COMPOST",      d:"The rotted-down plant matter you dig into soil to feed it"},
+    {w:"ORCHARD",      d:"A field planted with fruit trees"},
+    {w:"MEADOW",       d:"A field left to wild grass and flowers"},
+    {w:"HEDGEROW",     d:"The line of bushes marking the boundary of a field"},
+    {w:"TENDRIL",      d:"The curling thread a climbing plant grips with"},
+    {w:"FOLIAGE",      d:"The word for the leaves of a plant, all together"},
+    {w:"BOUQUET",      d:"An arranged bunch of flowers given as a gift"},
+    {w:"WREATH",       d:"The ring of greenery hung on a front door"},
+    {w:"EASEL",        d:"The wooden stand an artist rests a canvas on"},
+    {w:"PALETTE",      d:"The board an artist mixes their paints on"},
+    {w:"KILN",         d:"The very hot oven that hardens clay pottery"},
+    {w:"ANVIL",        d:"The heavy iron block a blacksmith hammers metal on"},
+    {w:"BELLOWS",      d:"The squeezed leather bag that blows air onto a fire"},
+    {w:"PENDULUM",     d:"The swinging weight that keeps a tall clock in time"},
+    {w:"SUNDIAL",      d:"The garden ornament that tells the time by a shadow"},
+    {w:"BAROMETER",    d:"The instrument that measures air pressure to forecast the weather"},
+    {w:"COMPASS",      d:"The instrument whose needle always points north"},
+    {w:"BINOCULARS",   d:"The double eyepiece you hold up to watch birds"},
+    {w:"TELESCOPE",    d:"The long tube you look through at the stars"},
+    {w:"TWEEZERS",     d:"The small pincers for pulling out a splinter"},
+    {w:"HAMMOCK",      d:"The net slung between two trees to lie in"},
+    {w:"CANOE",        d:"The narrow open boat you move with a paddle"},
+    {w:"HARBOUR",      d:"The sheltered water where boats tie up"},
+    {w:"LIGHTHOUSE",   d:"The tower whose light warns ships off the rocks"},
+    {w:"ANCHOR",       d:"The heavy hook dropped to hold a boat still"},
+    {w:"ESTUARY",      d:"Where a river widens out and meets the sea"},
+    {w:"GLACIER",      d:"A slow-moving river of ice"},
+    {w:"AVALANCHE",    d:"A sudden slide of snow down a mountainside"},
+    {w:"ATLAS",        d:"The big book that is nothing but maps, country after country"},
+    {w:"THESAURUS",    d:"The book you look in for another word meaning the same thing"},
+    {w:"GLOSSARY",     d:"The list at the back of a book explaining unfamiliar terms"},
+    {w:"MARGIN",       d:"The blank strip down the side of a printed page"},
+    {w:"RECEIPT",      d:"The printed slip proving what you paid for something"},
+    {w:"INVOICE",      d:"The bill a business sends asking to be paid"},
+    {w:"TURNSTILE",    d:"The revolving barrier that lets people through one at a time"},
+    {w:"AWNING",       d:"The fabric shade that winds out over a shop window"},
+    {w:"LECTERN",      d:"The tall stand a speaker rests their notes on"},
+    {w:"CANTEEN",      d:"The dining room in a workplace or a school"}
+  ];
+
+  function shuffle(a){
+    var r=a.slice(), i, j, t;
+    for(i=r.length-1;i>0;i--){ j=Math.floor(Math.random()*(i+1)); t=r[i]; r[i]=r[j]; r[j]=t; }
+    return r;
+  }
+  function el(id){ return document.getElementById(id); }
+  function clean(s){ return (s||"").toUpperCase().replace(/[^A-Z]/g,""); }
+
+  /* ---------- state ---------- */
+  var howMany = 6, set = [], qi = 0, shown = 0, results = [];
+
+  function show(id){
+    var all = document.querySelectorAll(".screen"), i;
+    for(i=0;i<all.length;i++){ all[i].classList.remove("on"); }
+    el(id).classList.add("on");
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
+
+  function start(){
+    set = shuffle(WORDS).slice(0, howMany);
+    qi = 0;
+    results = [];
+    el("qtot").textContent = howMany;
+    show("s-play");
+    loadWord();
+  }
+
+  function loadWord(){
+    var item = set[qi];
+    shown = 1;                       /* the first letter is free */
+    el("qnum").textContent = qi + 1;
+    el("clue").textContent = item.d;
+    el("guess").value = "";
+    el("verdict").textContent = "";
+    el("verdict").className = "verdict";
+    el("hint").disabled = false;
+    el("check").disabled = false;
+    el("skip").disabled = false;
+    drawBoxes();
+    updateHintLabel();
+    try { el("guess").focus(); } catch(e){}
+  }
+
+  function drawBoxes(){
+    var word = set[qi].w, html = "", i;
+    for(i=0;i<word.length;i++){
+      if(word.charAt(i) === " "){ html += '<span class="gap"></span>'; continue; }
+      var revealed = i < shown;
+      html += '<span class="'+(revealed ? "given" : "")+'">' + (revealed ? word.charAt(i) : "") + '</span>';
+    }
+    el("boxes").innerHTML = html;
+  }
+
+  function updateHintLabel(){
+    var used = shown - 1;
+    el("qhints").textContent = used === 0 ? "No extra letters" : (used === 1 ? "1 extra letter" : used + " extra letters");
+  }
+
+  function scoreFor(hintsUsed, solved){
+    if(!solved) return 0;
+    if(hintsUsed === 0) return 1;
+    if(hintsUsed === 1) return 0.7;
+    if(hintsUsed === 2) return 0.45;
+    if(hintsUsed === 3) return 0.25;
+    return 0.1;
+  }
+
+  function settle(solved){
+    var item = set[qi];
+    results.push({ w:item.w, d:item.d, hints:shown-1, solved:solved, share:scoreFor(shown-1, solved) });
+    el("hint").disabled = true;
+    el("check").disabled = true;
+    el("skip").disabled = true;
+    shown = item.w.length;
+    drawBoxes();
+
+    setTimeout(function(){
+      qi++;
+      if(qi < set.length){ loadWord(); } else { finish(); }
+    }, solved ? 1300 : 2400);
+  }
+
+  function checkGuess(){
+    var item = set[qi];
+    var guess = clean(el("guess").value);
+    if(!guess) return;
+
+    if(guess === clean(item.w)){
+      el("verdict").textContent = "That\u2019s it \u2014 " + item.w.charAt(0) + item.w.slice(1).toLowerCase() + ".";
+      el("verdict").className = "verdict good";
+      settle(true);
+    } else {
+      el("verdict").textContent = "Not that one. Have another go, or take a letter.";
+      el("verdict").className = "verdict bad";
+      var box = el("guess");
+      box.classList.remove("shake");
+      void box.offsetWidth;
+      box.classList.add("shake");
+      box.select();
+    }
+  }
+
+  function giveLetter(){
+    var word = set[qi].w;
+    if(shown >= word.length - 1){   /* never hand over the last letter */
+      el("verdict").textContent = "That\u2019s as much as I\u2019ll give you \u2014 it\u2019s nearly all there.";
+      el("verdict").className = "verdict";
+      return;
+    }
+    shown++;
+    if(word.charAt(shown-1) === " ") shown++;
+    drawBoxes();
+    updateHintLabel();
+    el("verdict").textContent = "";
+    el("verdict").className = "verdict";
+    try { el("guess").focus(); } catch(e){}
+  }
+
+  /* ---------- result ---------- */
+  var BANDS = [
+    {min:90, t:"They came straight out",  s:"Almost every word arrived on its own. That retrieval \u2014 knowing it and reaching it \u2014 is the bit that gets creaky first."},
+    {min:70, t:"Quick off the mark",      s:"Most of them surfaced without help. The ones that needed a nudge usually just needed a second longer."},
+    {min:50, t:"Getting there in the end", s:"Solid. When a word won\u2019t come, try running through the alphabet in your head \u2014 hearing the first sound often shakes it loose."},
+    {min:30, t:"A few stuck fast",         s:"Some days the words hide. Describing the thing out loud, in your own words, tends to bring the name along with it."},
+    {min:0,  t:"Everyone starts here",     s:"First runs are always rough. Come back tomorrow \u2014 a different game, a different muscle."}
+  ];
+
+  function finish(){
+    var totalShare = 0, clean_ = 0, helped = 0, missed = 0;
+    results.forEach(function(r){
+      totalShare += r.share;
+      if(!r.solved) missed++;
+      else if(r.hints === 0) clean_++;
+      else helped++;
+    });
+
+    var total = Math.round((totalShare / results.length) * 100);
+    el("score").textContent = total;
+    el("bClean").textContent = clean_;
+    el("bHelp").textContent = helped;
+    el("bMiss").textContent = missed;
+
+    var b = BANDS[BANDS.length-1], i;
+    for(i=0;i<BANDS.length;i++){ if(total >= BANDS[i].min){ b = BANDS[i]; break; } }
+    el("band").textContent = b.t;
+    el("bandsub").textContent = b.s;
+
+    var html = "";
+    results.forEach(function(r){
+      var col = !r.solved ? "#8A4F5E" : (r.hints === 0 ? "#4E6B58" : "#C09A5E");
+      var how = !r.solved ? "Wouldn\u2019t come"
+              : (r.hints === 0 ? "Straight out"
+              : (r.hints === 1 ? "1 letter" : r.hints + " letters"));
+      html += '<div><span class="dot" style="background:'+col+'"></span>'
+           +  '<span class="w">'+r.w.charAt(0)+r.w.slice(1).toLowerCase()+'</span>'
+           +  '<span class="how">'+how+'</span></div>';
+    });
+    el("recap").innerHTML = html;
+
+    show("s-result");
+  }
+
+  /* ---------- wiring ---------- */
+  el("go6").addEventListener("click", function(){ howMany = 6; start(); });
+  el("go10").addEventListener("click", function(){ howMany = 10; start(); });
+  el("check").addEventListener("click", checkGuess);
+  el("hint").addEventListener("click", giveLetter);
+  el("skip").addEventListener("click", function(){
+    var item = set[qi];
+    el("verdict").textContent = "It was " + item.w.charAt(0) + item.w.slice(1).toLowerCase() + ".";
+    el("verdict").className = "verdict";
+    settle(false);
+  });
+  el("guess").addEventListener("keydown", function(e){
+    if(e.key === "Enter"){ e.preventDefault(); checkGuess(); }
+  });
+  el("again").addEventListener("click", start);
+  el("switch").addEventListener("click", function(){ show("s-intro"); });
+})();
+</script>
+</body>
+</html>

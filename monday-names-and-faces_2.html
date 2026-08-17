@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Monday — Names &amp; Faces</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F3F0E7;
+    --card:#FBFAF5;
+    --edge:#DFDACB;
+    --ink:#23302A;
+    --ink-soft:#5C6A62;
+    --sage:#7D9A83;
+    --sage-deep:#4E6B58;
+    --mint:#D3E3D4;
+    --berry:#8A4F5E;
+    --display:"Newsreader", Georgia, "Times New Roman", serif;
+    --ui:"Figtree", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+
+  *{box-sizing:border-box}
+
+  html,body{margin:0;padding:0}
+
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--ui);
+    font-size:18px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    padding:20px 16px 56px;
+  }
+
+  .wrap{max-width:820px;margin:0 auto}
+
+  /* ---------- masthead ---------- */
+  .masthead{
+    display:flex;align-items:baseline;gap:12px;
+    padding-bottom:14px;margin-bottom:26px;
+    border-bottom:1px solid var(--edge);
+  }
+  .day{
+    font-family:var(--ui);font-size:12px;font-weight:600;
+    letter-spacing:.18em;text-transform:uppercase;color:var(--sage-deep);
+  }
+  .masthead h1{
+    font-family:var(--display);font-weight:400;font-size:26px;
+    margin:0;letter-spacing:-.01em;
+  }
+  .masthead .of{margin-left:auto;font-size:13px;color:var(--ink-soft)}
+
+  /* ---------- shared ---------- */
+  .screen{display:none;animation:rise .45s ease both}
+  .screen.on{display:block}
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  .lede{font-family:var(--display);font-size:24px;line-height:1.35;margin:0 0 12px;max-width:34ch}
+  .sub{color:var(--ink-soft);margin:0 0 26px;max-width:52ch}
+
+  button{font-family:var(--ui);font-size:18px;cursor:pointer}
+
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;
+    min-height:58px;padding:0 30px;border-radius:100px;
+    background:var(--sage-deep);color:#fff;border:1px solid var(--sage-deep);
+    font-weight:600;letter-spacing:.01em;
+    transition:background .2s ease,transform .12s ease;
+  }
+  .btn:hover{background:#3F5A48}
+  .btn:active{transform:translateY(1px)}
+  .btn.ghost{background:transparent;color:var(--sage-deep);border-color:var(--sage)}
+  .btn.ghost:hover{background:var(--mint)}
+
+  :focus-visible{outline:3px solid var(--berry);outline-offset:3px}
+
+  /* ---------- specimen cards ---------- */
+  .sheet{
+    display:grid;gap:16px;
+    grid-template-columns:repeat(2,1fr);
+    margin:0 0 28px;
+  }
+  @media(min-width:640px){
+    .sheet.cols6{grid-template-columns:repeat(3,1fr);gap:20px}
+    .sheet.cols4{grid-template-columns:repeat(4,1fr);gap:18px}
+  }
+
+  .specimen{
+    background:var(--card);border:1px solid var(--edge);border-radius:3px;
+    padding:14px 12px 12px;text-align:center;
+    box-shadow:0 1px 0 rgba(35,48,42,.04);
+    animation:rise .5s ease both;
+  }
+  .medallion{
+    width:100%;max-width:132px;margin:0 auto 12px;
+    aspect-ratio:1;border-radius:50%;
+    background:var(--mint);overflow:hidden;
+    display:flex;align-items:flex-end;justify-content:center;
+  }
+  .medallion svg{width:100%;height:100%;display:block}
+
+  .label{border-top:1px solid var(--edge);padding-top:9px}
+  .label .nm{
+    font-family:var(--display);font-style:italic;font-weight:500;
+    font-size:23px;line-height:1.2;display:block;
+  }
+  .label .no{
+    font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--ink-soft);margin-top:4px;display:block;
+  }
+
+  /* ---------- study timer ---------- */
+  .timerbar{
+    height:5px;background:var(--edge);border-radius:100px;overflow:hidden;margin-bottom:20px;
+  }
+  .timerbar i{display:block;height:100%;background:var(--sage);width:100%;transition:width 1s linear}
+
+  .row{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+
+  /* ---------- quiz ---------- */
+  .quizhead{
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-size:13px;color:var(--ink-soft);margin-bottom:18px;
+    letter-spacing:.06em;text-transform:uppercase;
+  }
+  .stage{display:flex;justify-content:center;margin-bottom:8px}
+  .stage .medallion{max-width:190px}
+  .prompt{text-align:center;font-family:var(--display);font-size:21px;margin:14px 0 22px}
+
+  .choices{display:grid;gap:12px;grid-template-columns:1fr}
+  @media(min-width:560px){.choices{grid-template-columns:1fr 1fr}}
+
+  .choice{
+    min-height:62px;padding:10px 18px;border-radius:6px;
+    background:var(--card);border:1.5px solid var(--edge);color:var(--ink);
+    font-family:var(--display);font-size:22px;font-weight:500;
+    text-align:left;transition:border-color .18s ease,background .18s ease;
+  }
+  .choice:hover:not(:disabled){border-color:var(--sage);background:var(--mint)}
+  .choice:disabled{cursor:default}
+  .choice.right{border-color:var(--sage-deep);background:var(--mint)}
+  .choice.wrong{border-color:var(--berry);background:#F4E9EB;color:var(--berry)}
+  .choice .mark{float:right;font-family:var(--ui);font-size:15px;font-weight:600}
+
+  .verdict{
+    min-height:30px;text-align:center;margin-top:18px;font-size:17px;color:var(--ink-soft);
+  }
+
+  /* ---------- pause ---------- */
+  .seedbox{
+    background:var(--card);border:1px solid var(--edge);border-radius:3px;
+    padding:22px;margin-bottom:22px;min-height:190px;
+    display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:center;
+  }
+  .seedbox svg{width:38px;height:38px}
+  .counts{display:flex;gap:10px;flex-wrap:wrap}
+  .counts button{
+    min-width:62px;min-height:58px;border-radius:6px;border:1.5px solid var(--edge);
+    background:var(--card);font-family:var(--display);font-size:22px;color:var(--ink);
+  }
+  .counts button:hover{border-color:var(--sage);background:var(--mint)}
+
+  /* ---------- result ---------- */
+  .scorewrap{text-align:center;padding:14px 0 6px}
+  .bignum{
+    font-family:var(--display);font-size:88px;line-height:1;font-weight:400;
+    letter-spacing:-.03em;display:block;
+  }
+  .outof{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft)}
+  .band{font-family:var(--display);font-style:italic;font-size:26px;margin:18px 0 6px}
+  .breakdown{
+    display:flex;justify-content:center;gap:34px;flex-wrap:wrap;
+    margin:26px 0 30px;padding:20px 0;border-top:1px solid var(--edge);border-bottom:1px solid var(--edge);
+  }
+  .breakdown div{text-align:center}
+  .breakdown b{font-family:var(--display);font-size:30px;font-weight:400;display:block}
+  .breakdown span{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+  .recap{display:grid;gap:10px;grid-template-columns:repeat(2,1fr);margin-bottom:30px}
+  @media(min-width:560px){.recap{grid-template-columns:repeat(3,1fr)}}
+  .recap div{
+    display:flex;align-items:center;gap:10px;font-family:var(--display);font-size:19px;
+    background:var(--card);border:1px solid var(--edge);border-radius:3px;padding:8px 12px;
+  }
+  .recap .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+
+  footer{
+    margin-top:44px;padding-top:16px;border-top:1px solid var(--edge);
+    font-size:13px;line-height:1.6;color:var(--ink-soft);
+  }
+
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <span class="day">Monday</span>
+    <h1>Names &amp; Faces</h1>
+    <span class="of">Daily practice</span>
+  </div>
+
+  <!-- INTRO -->
+  <section class="screen on" id="s-intro">
+    <p class="lede">Four people. Four names. The trick isn&rsquo;t hearing them &mdash; it&rsquo;s still having them a minute later.</p>
+    <p class="sub">Study them for a minute, then match each face to its name twice: once straight away, and once after a short break. The second round is where the points are.</p>
+    <div class="row" style="margin-bottom:22px">
+      <button class="btn" id="go4">Start with four faces</button>
+      <button class="btn ghost" id="go6">Make it six</button>
+    </div>
+    <p style="font-size:15px;color:var(--ink-soft);margin:0">Four takes about three minutes. Six is a proper stretch.</p>
+  </section>
+
+  <!-- STUDY -->
+  <section class="screen" id="s-study">
+    <div class="timerbar"><i id="tbar"></i></div>
+    <p class="sub" style="margin-bottom:20px">Study the six. Say each name out loud once &mdash; it helps more than reading it twice.</p>
+    <div class="sheet" id="sheet"></div>
+    <div class="row"><button class="btn ghost" id="ready">I&rsquo;ve got them</button></div>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="screen" id="s-quiz">
+    <div class="quizhead"><span id="qround">Round one</span><span id="qcount">1 of 6</span></div>
+    <div class="stage"><div class="medallion" id="qface"></div></div>
+    <p class="prompt">What is this person called?</p>
+    <div class="choices" id="choices"></div>
+    <p class="verdict" id="verdict"></p>
+  </section>
+
+  <!-- PAUSE -->
+  <section class="screen" id="s-pause">
+    <p class="lede">A short break first.</p>
+    <p class="sub">Count the seeds. This part isn&rsquo;t scored &mdash; it&rsquo;s here to clear your head, so the second round tests what actually stuck.</p>
+    <div class="seedbox" id="seedbox"></div>
+    <p style="margin:0 0 12px">How many did you count?</p>
+    <div class="counts" id="counts"></div>
+  </section>
+
+  <!-- RESULT -->
+  <section class="screen" id="s-result">
+    <div class="scorewrap">
+      <span class="bignum" id="score">0</span>
+      <span class="outof">out of 100</span>
+      <p class="band" id="band"></p>
+      <p class="sub" style="margin:0 auto;text-align:center" id="bandsub"></p>
+    </div>
+    <div class="breakdown">
+      <div><b id="r1">0/6</b><span>Straight away</span></div>
+      <div><b id="r2">0/6</b><span>After the break</span></div>
+    </div>
+    <div class="recap" id="recap"></div>
+    <div class="row" style="justify-content:center">
+      <button class="btn" id="again">Play a new set</button>
+      <button class="btn ghost" id="switch">Change the number of faces</button>
+    </div>
+  </section>
+
+  <footer>
+    Nothing is saved. Your score disappears the moment you close this page &mdash; come back tomorrow for a different game.
+    This is a memory exercise for practice and enjoyment, not a test or an assessment of your health.
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ============ palettes ============ */
+  var SKIN = [
+    {b:"#F2D2B6", s:"#E0BB9C", l:"#C9A184"},
+    {b:"#E8C3A0", s:"#D5AC87", l:"#BD9068"},
+    {b:"#D2A177", s:"#BC8B63", l:"#A0714B"},
+    {b:"#AC7B52", s:"#956740", l:"#7B5330"},
+    {b:"#7E5334", s:"#6B4429", l:"#54331C"},
+    {b:"#563824", s:"#472D1B", l:"#382113"}
+  ];
+
+  var HAIR = [
+    {n:"white",  c:"#EFEDE6", d:"#D5D1C5"},
+    {n:"silver", c:"#CBC8BF", d:"#AAA69C"},
+    {n:"grey",   c:"#9A9891", d:"#7C7A73"},
+    {n:"salt",   c:"#6E6C68", d:"#54524E"},
+    {n:"blonde", c:"#DCB871", d:"#B9924C"},
+    {n:"brown",  c:"#6B4A33", d:"#4E3323"},
+    {n:"dark",   c:"#312720", d:"#1D1712"},
+    {n:"ginger", c:"#C85B2A", d:"#9E421A"},
+    {n:"copper", c:"#A8552F", d:"#82391B"},
+    {n:"auburn", c:"#7E3B2C", d:"#5E2919"}
+  ];
+  var VIVID   = [7,8,9,4];      /* ginger, copper, auburn, blonde */
+  var NATURAL = [0,1,2,3,5,6];  /* white, silver, grey, salt, brown, dark */
+
+
+  var COLLAR = ["#5E7A82","#8A4F5E","#4E6B58","#7A6E52","#3F4C63","#8C6B4F","#6B5A76","#38594F"];
+
+  var STYLES = ["crop","receding","bald","sidepart","bob","long","bun","ponytail","curls","wavy"];
+
+  var NAMES = [
+    {n:"Margaret",g:"f"},{n:"Eleanor",g:"f"},{n:"Rosalind",g:"f"},{n:"Bernadette",g:"f"},
+    {n:"Patricia",g:"f"},{n:"Sheila",g:"f"},{n:"Gwen",g:"f"},{n:"Marian",g:"f"},
+    {n:"Yvonne",g:"f"},{n:"Colette",g:"f"},{n:"Deirdre",g:"f"},{n:"Nuala",g:"f"},
+    {n:"Fiona",g:"f"},{n:"Hazel",g:"f"},{n:"Iris",g:"f"},{n:"Ruth",g:"f"},
+    {n:"Vera",g:"f"},{n:"Joan",g:"f"},{n:"Nadia",g:"f"},{n:"Priya",g:"f"},
+    {n:"Amara",g:"f"},{n:"Lucia",g:"f"},{n:"Ines",g:"f"},{n:"Wendy",g:"f"},
+    {n:"Desmond",g:"m"},{n:"Alistair",g:"m"},{n:"Gerald",g:"m"},{n:"Malcolm",g:"m"},
+    {n:"Roland",g:"m"},{n:"Nigel",g:"m"},{n:"Barry",g:"m"},{n:"Duncan",g:"m"},
+    {n:"Frank",g:"m"},{n:"Vincent",g:"m"},{n:"Cormac",g:"m"},{n:"Seamus",g:"m"},
+    {n:"Rory",g:"m"},{n:"Eamonn",g:"m"},{n:"Hugh",g:"m"},{n:"Wilfred",g:"m"},
+    {n:"Clive",g:"m"},{n:"Terence",g:"m"},{n:"Omar",g:"m"},{n:"Idris",g:"m"},
+    {n:"Marco",g:"m"},{n:"Anton",g:"m"},{n:"Kwame",g:"m"},{n:"Julian",g:"m"}
+  ];
+
+  /* ============ helpers ============ */
+  function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+  function shuffle(a){
+    var r = a.slice(), i, j, t;
+    for(i=r.length-1;i>0;i--){ j=Math.floor(Math.random()*(i+1)); t=r[i]; r[i]=r[j]; r[j]=t; }
+    return r;
+  }
+  function el(id){ return document.getElementById(id); }
+
+  /* ============ face drawing ============ */
+  function hairPath(style, h){
+    var c = h.c, d = h.d, s = "";
+    var cap = "M30 58 C30 27 42 17 60 17 C78 17 90 27 90 58 C90 44 80 36 60 36 C40 36 30 44 30 58 Z";
+
+    if(style === "bald"){
+      return '<path d="M32 50 C34 34 44 26 60 26 C76 26 86 34 88 50 C86 42 76 38 60 38 C44 38 34 42 32 50 Z" fill="'+d+'" opacity=".22"/>';
+    }
+    if(style === "receding"){
+      s += '<path d="M30 58 C30 30 41 20 60 20 C79 20 90 30 90 58 C89 41 78 31 60 34 C42 31 31 41 30 58 Z" fill="'+c+'"/>';
+      return s;
+    }
+    if(style === "crop"){
+      return '<path d="'+cap+'" fill="'+c+'"/>';
+    }
+    if(style === "sidepart"){
+      s += '<path d="'+cap+'" fill="'+c+'"/>';
+      s += '<path d="M32 44 C36 26 48 18 62 19 C74 20 82 26 86 34 C74 28 58 30 48 38 C42 42 36 46 32 52 Z" fill="'+d+'"/>';
+      return s;
+    }
+    if(style === "bob"){
+      s += '<path d="M28 58 C28 26 41 16 60 16 C79 16 92 26 92 58 L92 82 C92 86 88 88 85 86 C82 66 79 52 74 45 C69 40 65 38 60 38 C55 38 51 40 46 45 C41 52 38 66 35 86 C32 88 28 86 28 82 Z" fill="'+c+'"/>';
+      return s;
+    }
+    if(style === "long"){
+      s += '<path d="M27 58 C27 25 41 15 60 15 C79 15 93 25 93 58 L93 104 C93 108 88 110 85 107 C84 78 80 54 74 45 C69 39 65 37 60 37 C55 37 51 39 46 45 C40 54 36 78 35 107 C32 110 27 108 27 104 Z" fill="'+c+'"/>';
+      return s;
+    }
+    if(style === "bun"){
+      s += '<circle cx="60" cy="14" r="12" fill="'+d+'"/>';
+      s += '<path d="M30 56 C30 28 42 19 60 19 C78 19 90 28 90 56 C90 43 80 35 60 35 C40 35 30 43 30 56 Z" fill="'+c+'"/>';
+      return s;
+    }
+    if(style === "ponytail"){
+      s += '<path d="M86 42 C100 48 104 66 98 80 C95 87 88 89 86 84 C92 72 92 56 84 48 Z" fill="'+d+'"/>';
+      s += '<path d="'+cap+'" fill="'+c+'"/>';
+      return s;
+    }
+    if(style === "curls"){
+      var pts = [[36,42],[43,30],[53,24],[67,24],[78,29],[86,41],[60,20],[31,52],[89,52]];
+      s += '<path d="'+cap+'" fill="'+c+'"/>';
+      for(var i=0;i<pts.length;i++){
+        s += '<circle cx="'+pts[i][0]+'" cy="'+pts[i][1]+'" r="10.5" fill="'+(i%2?c:d)+'"/>';
+      }
+      return s;
+    }
+    /* wavy */
+    s += '<path d="M28 58 C28 26 41 16 60 16 C79 16 92 26 92 58 C94 70 88 78 92 92 C86 96 82 90 84 82 C80 66 78 52 73 45 C68 40 65 38 60 38 C55 38 52 40 47 45 C42 52 40 66 36 82 C38 90 34 96 28 92 C32 78 26 70 28 58 Z" fill="'+c+'"/>';
+    return s;
+  }
+
+  function faceSVG(f){
+    var sk = f.skin, h = f.hair;
+    var o = '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">';
+
+    /* shoulders */
+    o += '<path d="M8 120 C12 100 36 92 60 92 C84 92 108 100 112 120 Z" fill="'+f.collar+'"/>';
+    /* neck */
+    o += '<path d="M50 70 h20 v20 c0 7 -20 7 -20 0 Z" fill="'+sk.s+'"/>';
+    /* ears */
+    o += '<ellipse cx="30" cy="56" rx="5.5" ry="8" fill="'+sk.s+'"/>';
+    o += '<ellipse cx="90" cy="56" rx="5.5" ry="8" fill="'+sk.s+'"/>';
+    /* head */
+    o += '<ellipse cx="60" cy="54" rx="'+f.rx+'" ry="'+f.ry+'" fill="'+sk.b+'"/>';
+    if(f.g === "m"){
+      /* squarer jaw */
+      o += '<path d="M'+(60-f.rx)+' 54 v'+(f.ry-14)+' q0 14 '+f.rx+' 14 q'+f.rx+' 0 '+f.rx+' -14 v-'+(f.ry-14)+' Z" fill="'+sk.b+'"/>';
+    }
+    /* earrings */
+    if(f.earring){
+      o += '<circle cx="30" cy="64" r="3.2" fill="'+f.metal+'"/><circle cx="90" cy="64" r="3.2" fill="'+f.metal+'"/>';
+    }
+
+    /* hair behind-ish + head-top */
+    o += hairPath(f.style, h);
+
+    /* brows — heavier and lower on masculine faces */
+    var by = (f.g === "m" ? 44 : 42) + f.brow;
+    var bw = (f.g === "m" ? 3.6 : 2.2);
+    o += '<path d="M42 '+by+' q7 -4 14 -1" stroke="'+h.d+'" stroke-width="'+bw+'" fill="none" stroke-linecap="round"/>';
+    o += '<path d="M64 '+(by-1)+' q7 -3 14 1" stroke="'+h.d+'" stroke-width="'+bw+'" fill="none" stroke-linecap="round"/>';
+
+    /* eyes */
+    o += '<ellipse cx="49" cy="54" rx="5" ry="3.4" fill="#FFFDF8"/>';
+    o += '<ellipse cx="71" cy="54" rx="5" ry="3.4" fill="#FFFDF8"/>';
+    o += '<circle cx="49" cy="54" r="2.5" fill="'+f.eye+'"/>';
+    o += '<circle cx="71" cy="54" r="2.5" fill="'+f.eye+'"/>';
+    if(f.g === "f"){
+      o += '<path d="M44 51.5 q5 -3 10 0" stroke="'+h.d+'" stroke-width="1.4" fill="none" stroke-linecap="round"/>';
+      o += '<path d="M66 51.5 q5 -3 10 0" stroke="'+h.d+'" stroke-width="1.4" fill="none" stroke-linecap="round"/>';
+    }
+    if(f.freckles){
+      o += '<g fill="'+sk.l+'" opacity=".55"><circle cx="45" cy="63" r="1"/><circle cx="50" cy="65" r="1"/><circle cx="41" cy="66" r="1"/><circle cx="70" cy="63" r="1"/><circle cx="75" cy="65" r="1"/><circle cx="79" cy="66" r="1"/><circle cx="56" cy="67" r="1"/><circle cx="64" cy="67" r="1"/></g>';
+    }
+
+    /* crow's feet + nasolabial — these people are grown-ups */
+    o += '<path d="M40 57 l-3.5 2 M40 55 l-4 0" stroke="'+sk.l+'" stroke-width="1" fill="none" stroke-linecap="round" opacity=".65"/>';
+    o += '<path d="M80 57 l3.5 2 M80 55 l4 0" stroke="'+sk.l+'" stroke-width="1" fill="none" stroke-linecap="round" opacity=".65"/>';
+    o += '<path d="M50 66 q-3 6 -1 9 M70 66 q3 6 1 9" stroke="'+sk.l+'" stroke-width="1.1" fill="none" stroke-linecap="round" opacity=".5"/>';
+
+    /* nose */
+    o += '<path d="M60 56 q-3.5 7 0.5 9.5 q2 1 3.5 -0.5" stroke="'+sk.l+'" stroke-width="1.8" fill="none" stroke-linecap="round"/>';
+
+    /* mouth */
+    var lip = f.lip || sk.l;
+    if(f.mouth === 0)      o += '<path d="M52 75 q8 6 16 0" stroke="'+lip+'" stroke-width="2.6" fill="none" stroke-linecap="round"/>';
+    else if(f.mouth === 1) o += '<path d="M53 75 q7 3 14 0" stroke="'+lip+'" stroke-width="2.6" fill="none" stroke-linecap="round"/>';
+    else                   o += '<path d="M52 74 q8 8 16 0 q-8 3 -16 0 Z" fill="'+lip+'" opacity=".9"/>';
+
+    /* facial hair */
+    if(f.beard === "tache"){
+      o += '<path d="M50 72 q10 -4 20 0 q-5 5 -10 5 q-5 0 -10 -5 Z" fill="'+h.d+'"/>';
+    } else if(f.beard === "goatee"){
+      o += '<path d="M54 79 q6 -2 12 0 q-1 8 -6 9 q-5 -1 -6 -9 Z" fill="'+h.d+'"/>';
+    } else if(f.beard === "full"){
+      o += '<path d="M33 56 q1 32 27 34 q26 -2 27 -34 q-5 18 -27 18 q-22 0 -27 -18 Z" fill="'+h.c+'"/>';
+      o += '<path d="M50 71 q10 -4 20 0 q-5 5 -10 5 q-5 0 -10 -5 Z" fill="'+h.d+'"/>';
+    } else if(f.beard === "stubble"){
+      o += '<path d="M34 58 q2 30 26 32 q24 -2 26 -32 q-5 17 -26 17 q-21 0 -26 -17 Z" fill="'+h.d+'" opacity=".28"/>';
+    }
+
+    /* glasses */
+    if(f.glasses === "round"){
+      o += '<g stroke="'+f.frame+'" stroke-width="2" fill="none"><circle cx="49" cy="54" r="10.5"/><circle cx="71" cy="54" r="10.5"/><path d="M59.5 53 h1"/><path d="M38.5 52 l-6 -2 M81.5 52 l6 -2"/></g>';
+    } else if(f.glasses === "rect"){
+      o += '<g stroke="'+f.frame+'" stroke-width="2" fill="none"><rect x="38" y="47" width="22" height="14" rx="3"/><rect x="62" y="47" width="22" height="14" rx="3"/><path d="M60 53 h2"/><path d="M38 50 l-5 -1 M84 50 l5 -1"/></g>';
+    } else if(f.glasses === "halfmoon"){
+      o += '<g stroke="'+f.frame+'" stroke-width="2" fill="none"><path d="M39 54 h20 a2 2 0 0 1 2 2 v2 a6 6 0 0 1 -6 6 h-12 a6 6 0 0 1 -6 -6 v-2 a2 2 0 0 1 2 -2 Z"/><path d="M61 54 h20 a2 2 0 0 1 2 2 v2 a6 6 0 0 1 -6 6 h-12 a6 6 0 0 1 -6 -6 v-2 a2 2 0 0 1 2 -2 Z"/><path d="M39 54 l-6 -2 M83 54 l6 -2"/></g>';
+    }
+
+    o += '</svg>';
+    return o;
+  }
+
+  /* ============ build a cast of six ============ */
+  var FEM_STYLES  = ["bob","long","bun","ponytail","wavy","curls"];
+  var MASC_STYLES = ["crop","receding","bald","sidepart","curls","wavy"];
+  var EYES = ["#4A3B2A","#38556B","#3D5A46","#5B4636","#2C2A26","#6B7F5A"];
+  var FRAMES = ["#3B3A36","#8C6B4F","#4E6B58","#8A4F5E","#7A7269"];
+  var LIPS = ["#A85A62","#8A4F5E","#B8686B","#94505A","#C07079"];
+  var METALS = ["#C9A227","#C9C6BD","#B87333"];
+
+  /* light -> dark buckets, so every cast spans the range */
+  var SKIN_BUCKETS_4 = [[0,1],[2],[3,4],[5]];
+  var SKIN_BUCKETS_6 = [[0],[1],[2],[3],[4],[5]];
+
+  function namesFor(count){
+    var half = count / 2;
+    var fem = shuffle(NAMES.filter(function(p){ return p.g === "f"; }));
+    var mas = shuffle(NAMES.filter(function(p){ return p.g === "m"; }));
+    var used = {}, out = [], i;
+    function take(pool, n){
+      var got = 0;
+      for(i=0;i<pool.length && got<n;i++){
+        var L = pool[i].n.charAt(0);
+        if(!used[L]){ used[L] = 1; out.push(pool[i]); got++; }
+      }
+    }
+    take(fem, half);
+    take(mas, half);
+    return out;
+  }
+
+  function buildCast(count){
+    var people = namesFor(count);
+    var buckets = shuffle((count === 4 ? SKIN_BUCKETS_4 : SKIN_BUCKETS_6).slice());
+    var skinIdx = buckets.map(function(b){ return pick(b); });
+
+    /* exactly one vivid head of hair, given to the lightest skin in the set */
+    var lightest = 0, i;
+    for(i=1;i<skinIdx.length;i++){ if(skinIdx[i] < skinIdx[lightest]) lightest = i; }
+    var naturals = shuffle(NATURAL.slice()).slice(0, count - 1);
+    var hairIdx = [];
+    var nPtr = 0;
+    for(i=0;i<count;i++){ hairIdx.push(i === lightest ? pick(VIVID) : naturals[nPtr++]); }
+
+    /* which slots are male, and which of those gets the guaranteed beard / bald head */
+    var maleSlots = [], femSlots = [];
+    for(i=0;i<people.length;i++){ (people[i].g === "m" ? maleSlots : femSlots).push(i); }
+    maleSlots = shuffle(maleSlots);
+    var beardSlot = maleSlots[0];
+    var baldSlot  = maleSlots.length > 1 && Math.random() < 0.75 ? maleSlots[1] : maleSlots[0];
+
+    /* one or two people in glasses */
+    var glassSlots = shuffle(people.map(function(_,k){ return k; })).slice(0, Math.random() < 0.5 ? 1 : 2);
+
+    var usedStyle = {}, cast = [];
+
+    for(i=0;i<people.length;i++){
+      var person = people[i];
+      var isM = person.g === "m";
+      var skin = SKIN[skinIdx[i]];
+      var hair = HAIR[hairIdx[i]];
+
+      /* dark hair on the darkest skin reads as one blob — lighten it */
+      if(skinIdx[i] >= 4 && hairIdx[i] === 6){ hair = HAIR[pick([0,1,2])]; }
+
+      var style;
+      if(i === baldSlot){
+        style = "bald";
+      } else {
+        var opts = shuffle(isM ? MASC_STYLES : FEM_STYLES), k;
+        for(k=0;k<opts.length;k++){ if(!usedStyle[opts[k]] && opts[k] !== "bald"){ style = opts[k]; break; } }
+        if(!style){ style = opts[0]; }
+      }
+      usedStyle[style] = 1;
+
+      var beard = "none";
+      if(isM){
+        if(i === beardSlot) beard = "full";
+        else if(Math.random() < 0.55) beard = pick(["tache","stubble","goatee"]);
+      }
+
+      var vivid = VIVID.indexOf(hairIdx[i]) > -1;
+
+      cast.push({
+        name: person.n,
+        g: person.g,
+        skin: skin,
+        hair: hair,
+        collar: COLLAR[i % COLLAR.length],
+        style: style,
+        beard: beard,
+        glasses: glassSlots.indexOf(i) > -1 ? pick(["round","rect","halfmoon"]) : "none",
+        frame: pick(FRAMES),
+        eye: pick(EYES),
+        lip: isM ? null : pick(LIPS),
+        earring: !isM && Math.random() < 0.65,
+        metal: pick(METALS),
+        freckles: vivid && skinIdx[i] <= 2 && Math.random() < 0.7,
+        rx: isM ? 28 + Math.round(Math.random()*2) : 26 + Math.round(Math.random()*2),
+        ry: 33 + Math.round(Math.random()*3),
+        brow: Math.round(Math.random()*2) - 1,
+        mouth: Math.floor(Math.random()*3)
+      });
+    }
+    return shuffle(cast);
+  }
+
+  /* ============ state ============ */
+  var cast = [], order = [], qi = 0, round = 1, r1 = 0, r2 = 0, perFace = {}, timer = null;
+  var castSize = 4;
+
+  function show(id){
+    var all = document.querySelectorAll(".screen"), i;
+    for(i=0;i<all.length;i++){ all[i].classList.remove("on"); }
+    el(id).classList.add("on");
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
+
+  /* ============ study ============ */
+  function startStudy(){
+    cast = buildCast(castSize);
+    var STUDY_SECONDS = castSize * 15;
+    r1 = 0; r2 = 0; perFace = {};
+    var sheet = el("sheet"), i, html = "";
+    sheet.className = "sheet cols" + castSize;
+    for(i=0;i<cast.length;i++){
+      html += '<figure class="specimen" style="animation-delay:'+(i*70)+'ms">'
+            +   '<div class="medallion">'+faceSVG(cast[i])+'</div>'
+            +   '<figcaption class="label"><span class="nm">'+cast[i].name+'</span>'
+            +   '<span class="no">No. '+(i+1)+'</span></figcaption>'
+            + '</figure>';
+    }
+    sheet.innerHTML = html;
+    show("s-study");
+
+    var left = STUDY_SECONDS;
+    el("tbar").style.width = "100%";
+    clearInterval(timer);
+    timer = setInterval(function(){
+      left--;
+      el("tbar").style.width = Math.max(0,(left/STUDY_SECONDS)*100) + "%";
+      if(left <= 0){ clearInterval(timer); startRound(1); }
+    }, 1000);
+  }
+
+  /* ============ quiz ============ */
+  function startRound(n){
+    clearInterval(timer);
+    round = n; qi = 0;
+    order = shuffle(cast.slice());
+    el("qround").textContent = n === 1 ? "Round one" : "Round two \u2014 after the break";
+    show("s-quiz");
+    askQuestion();
+  }
+
+  function askQuestion(){
+    var f = order[qi];
+    el("qcount").textContent = (qi+1) + " of " + order.length;
+    el("qface").innerHTML = faceSVG(f);
+    el("verdict").textContent = "";
+
+    var names = shuffle(cast.map(function(c){ return c.name; }));
+    var box = el("choices");
+    box.innerHTML = "";
+    names.forEach(function(nm){
+      var b = document.createElement("button");
+      b.className = "choice";
+      b.type = "button";
+      b.textContent = nm;
+      b.addEventListener("click", function(){ answer(nm, f, b); });
+      box.appendChild(b);
+    });
+  }
+
+  function answer(chosen, face, btn){
+    var buttons = el("choices").querySelectorAll("button"), i;
+    for(i=0;i<buttons.length;i++){ buttons[i].disabled = true; }
+
+    var correct = chosen === face.name;
+    if(!perFace[face.name]) perFace[face.name] = {r1:false, r2:false};
+
+    if(correct){
+      btn.classList.add("right");
+      btn.innerHTML = face.name + '<span class="mark">Yes</span>';
+      el("verdict").textContent = "That\u2019s " + face.name + ".";
+      if(round === 1){ r1++; perFace[face.name].r1 = true; }
+      else { r2++; perFace[face.name].r2 = true; }
+    } else {
+      btn.classList.add("wrong");
+      for(i=0;i<buttons.length;i++){
+        if(buttons[i].textContent === face.name || buttons[i].textContent.indexOf(face.name) === 0){
+          buttons[i].classList.add("right");
+          buttons[i].innerHTML = face.name + '<span class="mark">This one</span>';
+        }
+      }
+      el("verdict").textContent = "This is " + face.name + ".";
+    }
+
+    setTimeout(function(){
+      qi++;
+      if(qi < order.length){ askQuestion(); }
+      else if(round === 1){ startPause(); }
+      else { finish(); }
+    }, correct ? 900 : 1700);
+  }
+
+  /* ============ pause / distractor ============ */
+  var seedRounds = 0;
+
+  function seedSVG(){
+    return '<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
+         + '<path d="M20 4 C30 12 32 26 20 36 C8 26 10 12 20 4 Z" fill="#7D9A83"/>'
+         + '<path d="M20 8 L20 33" stroke="#4E6B58" stroke-width="1.6" fill="none"/>'
+         + '</svg>';
+  }
+
+  function startPause(){
+    seedRounds = 0;
+    show("s-pause");
+    nextSeeds();
+  }
+
+  function nextSeeds(){
+    var n = 4 + Math.floor(Math.random()*9); /* 4–12 */
+    var box = el("seedbox"), html = "", i;
+    for(i=0;i<n;i++){
+      var rot = Math.floor(Math.random()*360);
+      html += '<span style="display:inline-block;transform:rotate('+rot+'deg)">'+seedSVG()+'</span>';
+    }
+    box.innerHTML = html;
+
+    var opts = [], base = Math.max(3, n-2);
+    for(i=0;i<5;i++){ opts.push(base+i); }
+    opts = shuffle(opts);
+
+    var cbox = el("counts");
+    cbox.innerHTML = "";
+    opts.forEach(function(v){
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = v;
+      b.addEventListener("click", function(){
+        seedRounds++;
+        if(seedRounds >= 3){ startRound(2); } else { nextSeeds(); }
+      });
+      cbox.appendChild(b);
+    });
+  }
+
+  /* ============ result ============ */
+  var BANDS = [
+    {min:90, t:"Sharp as a tack",        s:"You held every one of them through the break. That\u2019s the hard part."},
+    {min:70, t:"Strong recall",          s:"Most of them survived the break \u2014 that\u2019s real retention, not just short-term holding."},
+    {min:50, t:"The names are sticking", s:"Solid. Try saying each name out loud during the study round tomorrow and see what changes."},
+    {min:30, t:"Getting there",          s:"Holding several names at once is a lot. Try linking each one to something about the face \u2014 it gives your memory a handle to grab."},
+    {min:0,  t:"Everyone starts here",   s:"First runs are always rough. Come back tomorrow \u2014 a different game, a different muscle."}
+  ];
+
+  function finish(){
+    var n = cast.length;
+    var total = Math.round((r1/n)*40 + (r2/n)*60);
+    el("score").textContent = total;
+    el("r1").textContent = r1 + "/" + n;
+    el("r2").textContent = r2 + "/" + n;
+
+    var b = BANDS[0], i;
+    for(i=0;i<BANDS.length;i++){ if(total >= BANDS[i].min){ b = BANDS[i]; break; } }
+    el("band").textContent = b.t;
+    el("bandsub").textContent = b.s;
+
+    var recap = el("recap"), html = "";
+    for(i=0;i<cast.length;i++){
+      var rec = perFace[cast[i].name] || {r1:false,r2:false};
+      var hits = (rec.r1?1:0) + (rec.r2?1:0);
+      var col = hits === 2 ? "#4E6B58" : (hits === 1 ? "#C09A5E" : "#8A4F5E");
+      html += '<div><span class="dot" style="background:'+col+'"></span>'+cast[i].name+'</div>';
+    }
+    recap.innerHTML = html;
+
+    show("s-result");
+  }
+
+  /* ============ wiring ============ */
+  el("go4").addEventListener("click", function(){ castSize = 4; startStudy(); });
+  el("go6").addEventListener("click", function(){ castSize = 6; startStudy(); });
+  el("again").addEventListener("click", startStudy);
+  el("switch").addEventListener("click", function(){ show("s-intro"); });
+  el("ready").addEventListener("click", function(){ clearInterval(timer); startRound(1); });
+})();
+</script>
+</body>
+</html>
