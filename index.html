@@ -1,3 +1,6 @@
+
+
+Index · HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,10 +29,10 @@
   }
   .wrap{max-width:880px;margin:0 auto}
   a{color:inherit}
-
+ 
   /* ---------- masthead ---------- */
   .masthead{
-    padding-bottom:20px;margin-bottom:30px;border-bottom:1px solid var(--edge);
+    padding-bottom:22px;margin-bottom:34px;border-bottom:1px solid var(--edge);
   }
   .eyebrow{font-size:12px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--sage-deep);display:block;margin-bottom:8px}
   .masthead h1{
@@ -37,13 +40,7 @@
     margin:0 0 12px;letter-spacing:-.02em;line-height:1.05;
   }
   .masthead p{margin:0;color:var(--ink-soft);max-width:56ch;font-size:19px}
-
-  /* ---------- intro prose ---------- */
-  .intro{margin-bottom:38px;max-width:60ch}
-  .intro p{margin:0 0 15px}
-  .intro p:last-child{margin-bottom:0}
-  .intro strong{font-weight:600}
-
+ 
   /* ---------- calendar strip ---------- */
   .calhead{
     display:flex;justify-content:space-between;align-items:baseline;gap:12px;
@@ -58,7 +55,7 @@
     background:none;border:0;padding:0;cursor:pointer;font-family:var(--ui);
   }
   .today-link[hidden]{display:none}
-
+ 
   .cal{
     display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:34px;
   }
@@ -77,7 +74,7 @@
   .cal button.chosen{background:var(--mint);border-color:var(--sage-deep)}
   .cal button .dot{width:5px;height:5px;border-radius:50%;background:var(--sage-deep);opacity:0}
   .cal button.today .dot{opacity:1}
-
+ 
   /* ---------- featured ---------- */
   .feature{
     background:var(--card);border:1px solid var(--edge);border-radius:3px;
@@ -110,7 +107,7 @@
   .feature .cta:hover{background:#3F5A48}
   .feature .cta:active{transform:translateY(1px)}
   .feature .mins{font-size:15px;color:var(--ink-soft);margin-left:16px}
-
+ 
   /* ---------- the week list ---------- */
   .weekhead{
     font-size:12px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;
@@ -130,14 +127,14 @@
   .week .nm{font-family:var(--display);font-size:22px;font-weight:500;display:block;line-height:1.25;margin:1px 0 3px}
   .week .tr{font-size:15px;color:var(--ink-soft);display:block}
   .week .arrow{flex:0 0 auto;align-self:center;color:var(--sage-deep);font-size:22px;line-height:1}
-
+ 
   footer{
     padding-top:20px;border-top:1px solid var(--edge);
     font-size:13px;line-height:1.65;color:var(--ink-soft);max-width:60ch;
   }
   footer p{margin:0 0 10px}
   footer p:last-child{margin:0}
-
+ 
   :focus-visible{outline:3px solid var(--berry);outline-offset:3px}
   @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
   @media(max-width:520px){
@@ -150,43 +147,37 @@
 </head>
 <body>
 <div class="wrap">
-
+ 
   <header class="masthead">
     <span class="eyebrow">Your daily practice</span>
     <h1>Daily Brain Training</h1>
-    <p>A different short exercise every day of the week, each one built around a particular kind of remembering. Five minutes, once a day.</p>
+    <p>A different five-minute exercise for each day of the week, each one built around a different kind of remembering.<br>Nothing is saved and nothing is scored against you &mdash; it&rsquo;s practice, not a test.</p>
   </header>
-
-  <div class="intro">
-    <p>Memory isn&rsquo;t one thing. Putting a name to a face, holding a phone number long enough to dial it, remembering which room you left your glasses in, reaching for a word that won&rsquo;t come &mdash; those are four separate jobs, and they don&rsquo;t all go at the same rate.</p>
-    <p>So rather than the same puzzle every day, there&rsquo;s a different one for each day of the week, and each one asks for something different. Today&rsquo;s is already picked for you below. You can play any of the others whenever you like.</p>
-    <p><strong>Nothing is saved and nothing is scored against you.</strong> You&rsquo;ll get a number at the end of each game, but it disappears when you close the page &mdash; there&rsquo;s no record, no history, and no comparing one day with the next. It&rsquo;s practice, not a test.</p>
-  </div>
-
+ 
   <div class="calhead">
     <h2>Pick a day</h2>
     <button class="today-link" id="backToToday" hidden>Back to today</button>
   </div>
   <nav class="cal" id="cal" aria-label="Choose a day"></nav>
-
+ 
   <section class="feature" id="feature" aria-live="polite"></section>
-
+ 
   <h2 class="weekhead">The whole week</h2>
   <nav class="week" id="week"></nav>
-
+ 
   <footer>
     <p>These are memory exercises for practice and enjoyment. They are not a test, a screening tool, or an assessment of your health, and the score they give you doesn&rsquo;t mean anything on its own &mdash; tiredness, distraction and how much sleep you had all move it around.</p>
     <p>If you have any concerns about your memory, that&rsquo;s a conversation for your GP, not a number on a webpage.</p>
   </footer>
-
+ 
 </div>
-
+ 
 <script>
 (function(){
   "use strict";
-
+ 
   var INK = "#23302A", SAGE = "#4E6B58", MINT = "#D3E3D4";
-
+ 
   function mark(kind){
     var o = '<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">';
     var st = 'fill="none" stroke="'+INK+'" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"';
@@ -207,7 +198,7 @@
     }
     return o + '</svg>';
   }
-
+ 
   /* Index 0 = Sunday, matching Date.getDay() */
   var DAYS = [
     {
@@ -274,15 +265,15 @@
       mk:"book"
     }
   ];
-
+ 
   /* Monday-first running order for anything shown as a week */
   var ORDER = [1,2,3,4,5,6,0];
-
+ 
   var today = new Date().getDay();
   var chosen = today;
-
+ 
   function el(id){ return document.getElementById(id); }
-
+ 
   function niceDate(){
     try{
       return new Date().toLocaleDateString(undefined, {weekday:"long", day:"numeric", month:"long"});
@@ -290,7 +281,7 @@
       return DAYS[today].name;
     }
   }
-
+ 
   function paintCalendar(){
     var html = "";
     ORDER.forEach(function(i){
@@ -304,7 +295,7 @@
            +  '</button>';
     });
     el("cal").innerHTML = html;
-
+ 
     var btns = el("cal").querySelectorAll("button"), k;
     for(k=0;k<btns.length;k++){
       (function(node){
@@ -316,10 +307,10 @@
         });
       })(btns[k]);
     }
-
+ 
     el("backToToday").hidden = (chosen === today);
   }
-
+ 
   function paintFeature(){
     var d = DAYS[chosen];
     var isToday = chosen === today;
@@ -334,7 +325,7 @@
              + '<span class="mins">'+d.mins+'</span>';
     el("feature").innerHTML = html;
   }
-
+ 
   function paintWeek(){
     var html = "";
     ORDER.forEach(function(i){
@@ -351,14 +342,14 @@
     });
     el("week").innerHTML = html;
   }
-
+ 
   el("backToToday").addEventListener("click", function(){
     chosen = today;
     paintCalendar();
     paintFeature();
     window.scrollTo({top:0, behavior:"smooth"});
   });
-
+ 
   paintCalendar();
   paintFeature();
   paintWeek();
@@ -366,3 +357,4 @@
 </script>
 </body>
 </html>
+ 
